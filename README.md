@@ -27,9 +27,9 @@ To use the database via a terminal the following command can be used to connect 
 |cmd     |description              |
 |:-------|:------------------------|
 |\l      |show databases           |
-|\c  <db>|connect to database      |
-|\dt <db>|show tables of a database|
-|\i <sql>|run specified sql file   |
+|\c  (db)|connect to database      |
+|\dt (db)|show tables of a database|
+|\i (sql)|run specified sql file   |
 
 ### vitronic 
 
@@ -42,7 +42,7 @@ The following attributes are part of the table within the database and connected
 
 |type    |Attribute           |Descritpion                                               |
 |:-------|:-------------------|:---------------------------------------------------------|
-|????    |id                  |PaketId                                                   |
+|SERIAL  |id                  |PaketId , (aut-increment int)                             |
 |int     |lastSeenAtGate      |At which gate was the package last seen                   |
 |int     |length              |Length of package                                         |
 |int     |hight               |Hight of package                                          |
@@ -55,4 +55,4 @@ The following attributes are part of the table within the database and connected
 - OK
 - DEFECTIVE
 - CHINA
-- Missing
+- MISSING
