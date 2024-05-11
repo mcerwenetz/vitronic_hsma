@@ -1,10 +1,10 @@
 CREATE TABLE paket(
 	id SERIAL,
-	lastGate INT,
 	lenght INT,
 	height INT,
 	lastGate INT,
 	lastSeenAt TIMESTAMP,
 	expectedNext TIMESTAMP,
+	status INT,
 	PRIMARY KEY (id)
 );
