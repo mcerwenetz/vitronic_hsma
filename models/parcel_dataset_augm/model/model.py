@@ -18,9 +18,9 @@ import time
 LEARNING_RATE= 1e-4
 EPOCHS = 10
 BATCH_SIZE = 32
-DENSE_1 = 64
-DENSE_2 = 32
-DENSE_3 = 16
+DENSE_1 = 128
+DENSE_2 = 64
+DENSE_3 = 32
 DENSE_4 = 4
 
 def get_data(rows,path):
@@ -108,7 +108,7 @@ ts = time.time()
 model_name = "model"+datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 model.save("/home/ela/Desktop/vitronic/parcel_dataset_augm/"+model_name)
 # plot the model training history
-N = EPOCHS
+N = len(H.history["loss"])
 plt.style.use("ggplot")
 plt.figure()
 plt.plot(np.arange(0, N), H.history["loss"], label="train_loss")
