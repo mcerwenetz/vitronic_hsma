@@ -1,5 +1,5 @@
 from picamera2 import Picamera2, Preview
-from time import sleep
+from time import sleep, time
 
 import cv2
 import matplotlib.pyplot as plt
@@ -9,18 +9,20 @@ def main():
 
     camera = Picamera2()
     camera.configure(camera.create_preview_configuration(
-        main={"format": 'XRGB8888', "size": (640, 480)}))
-    # camera.start_preview()
+        main={"format": 'XRGB8888', "size": (1920, 1080)}))
+    camera.start_preview()
     camera.start()
 
     input("press enter for first photo")
 
     img = camera.capture_array()
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
 
     input("press enter for second photo")
-
     img2 = camera.capture_array()
+    start = time()
+
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
     orb = cv2.ORB.create()
@@ -36,6 +38,10 @@ def main():
 
     # Sort them in the order of their distance.
     matches = sorted(matches, key=lambda x: x.distance)
+
+    end = time()
+
+    print(f"elapsed time: {end-start}")
 
     # Draw first 10 matches.
     img3 = cv2.drawMatches(
