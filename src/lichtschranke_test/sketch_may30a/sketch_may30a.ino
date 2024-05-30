@@ -1,13 +1,14 @@
 
 int diodePin = 2;
-int val = 0;
+int status_photodiode_n_0 = 0;
+int status_photodiode_n_1 = 0;
 
-long starttime;
-long stoptime;
-long longest = 0;
-long diff = 0;
+// Variables 
+long starttime_0;
+long stoptime_0;
+long difftime_0 = 0;
 
-int swtch = 0;
+int status_timemeasurement = 0;
 int change = 0;
 void setup() {
   // put your setup code here, to run once:
@@ -16,33 +17,30 @@ void setup() {
 }
 
 void loop() {
-
-  val = digitalRead(diodePin);
+  status_photodiode_n_0 = digitalRead(diodePin);
   //check if light is on diode
-  if(val == 0){
-    //if switch is 0 set starttime
-    if(swtch == 0){
-      starttime = millis();
-      swtch = 1;
+  if(status_photodiode_n_0 == 1){
+    //if switch is 0 set starttime_0
+    if(status_timemeasurement == 0){
+      starttime_0 = millis();
+      status_timemeasurement = 1;
     }
   }
   //light is off on diode
   else{
-    if(swtch == 1){
-      stoptime = millis();
-      swtch = 0;
+    if(status_timemeasurement == 1){
+      stoptime_0 = millis();
+      status_timemeasurement = 0;
       change = 1;
     }
   }
   if(change == 1){
-    diff = stoptime - starttime;
-    Serial.println("new diff");
-    Serial.print(diff);
-    //find max
-    if(diff > longest){
-      longest = diff;
-      Serial.println("new longest");
-      Serial.print(longest);
+    difftime_0 = stoptime_0 - starttime_0;
+    if (difftime_0 > 5) {
+      Serial.print("Unterbrechung Laserschranke: ");
+      Serial.print(difftime_0);
+      Serial.print(" ms");
+      Serial.println();
     }
     change = 0;  
   }
