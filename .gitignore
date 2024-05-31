@@ -1,2 +1,5 @@
 #env vars
 .env
+
+#remove pycache from git 
+__pycache__/
