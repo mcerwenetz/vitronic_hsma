@@ -1,6 +1,7 @@
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.preprocessing.image import load_img
 from tensorflow.keras.models import load_model
+import tensorflow as tf
 import numpy as np
 import mimetypes
 import argparse
@@ -12,13 +13,15 @@ import os
 MODEL_PATH = sys.argv[1]
 IMAGES_PATH = sys.argv[2]
 images = os.listdir(IMAGES_PATH)
-images.remove("_annotations.csv")
+#images.remove("_annotations.csv")
 print("[INFO] loading object detector...")
 
-model = load_model(MODEL_PATH)
+#model = tf.saved_model.load(MODEL_PATH)
+model = tf.keras.models.load_model(MODEL_PATH)
+#model=tf.keras.layers.TFSMLayer(MODEL_PATH, call_endpoint='serving_default')
 
 for i in images:
-    image = load_img(IMAGES_PATH+'/'+i, target_size=(416, 416))
+    image = load_img(IMAGES_PATH+'/'+i, target_size=(224, 224))
 
     image = img_to_array(image) / 255.0
     image = np.expand_dims(image, axis=0)

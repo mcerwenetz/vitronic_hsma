@@ -45,7 +45,7 @@ def main():
 
     # Draw first 10 matches.
     img3 = cv2.drawMatches(
-        img, kp1, img2, kp2, matches[:10], None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+        img, kp1, img2, kp2, matches[:20], None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
     plt.imshow(img3), plt.show()
 
