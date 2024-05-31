@@ -1,48 +1,90 @@
+// Pin Out
+int Diode0Pin = 2;
+int Diode1Pin = 3;
 
-int diodePin = 2;
-int status_photodiode_n_0 = 0;
-int status_photodiode_n_1 = 0;
+// Interrupted Laser digital read
+bool status_Laser0;
 
-// Variables 
-long starttime_0;
-long stoptime_0;
-long difftime_0 = 0;
+// Time measurement
+int status_timemeasurment = 0;
+int newtime = 0;
+long starttime;
+long stoptime;
+long difftime = 0;
 
-int status_timemeasurement = 0;
-int change = 0;
+// Height detection
+bool height0 = 0;
+bool height1 = 0;
+
 void setup() {
-  // put your setup code here, to run once:
-  pinMode(diodePin, INPUT);
-  Serial.begin(9600);
+  pinMode(Diode0Pin, INPUT);
+  pinMode(Diode1Pin, INPUT);
+  Serial.begin(115200);
 }
 
 void loop() {
-  status_photodiode_n_0 = digitalRead(diodePin);
-  //check if light is on diode
-  if(status_photodiode_n_0 == 1){
-    //if switch is 0 set starttime_0
-    if(status_timemeasurement == 0){
-      starttime_0 = millis();
-      status_timemeasurement = 1;
+  status_Laser0 = debounceSwitch(Diode0Pin);
+  // detect interruption of laser
+  if (status_Laser0 == 1)
+  {
+    if (status_timemeasurment == 0)
+      starttime = millis();
+      if (status_timemeasurment == 0)
+      {
+        Serial.println("interrupted light barrier");
+      }
+      status_timemeasurment = 1;
+      delay(0.1);
+      heightDetection();
+  }
+  // laser is uninterrupted again
+  else
+  {
+    if(status_timemeasurment == 1)
+    {
+      status_timemeasurment = 0;
+      stoptime = millis();
+      newtime = 1;
     }
   }
-  //light is off on diode
-  else{
-    if(status_timemeasurement == 1){
-      stoptime_0 = millis();
-      status_timemeasurement = 0;
-      change = 1;
-    }
-  }
-  if(change == 1){
-    difftime_0 = stoptime_0 - starttime_0;
-    if (difftime_0 > 5) {
-      Serial.print("Unterbrechung Laserschranke: ");
-      Serial.print(difftime_0);
-      Serial.print(" ms");
+
+  // new timemeaserent return value
+  if (newtime == 1)
+  {
+    newtime = 0;
+    difftime = stoptime - starttime;
+    if (difftime > 5) 
+    {
+      Serial.print(difftime);
+      Serial.print(" ms, heigth: ");
+      Serial.print(height1);
+      Serial.print(height0);
       Serial.println();
+      height0 = 0;
+      height1 = 0;
     }
-    change = 0;  
   }
+  
   delay(0.1);
+}
+
+bool debounceSwitch(int Pin) {
+    bool currentState = digitalRead(Pin);
+    delay(5);  // Warten für die Entprellungszeit
+    bool newState = digitalRead(Pin);
+
+    if (currentState == newState) {
+        return newState;
+    } else {
+        return debounceSwitch(Pin);  // Wiederhole, wenn nicht stabil
+    }
+}
+
+void heightDetection() {
+  if(debounceSwitch(Diode0Pin) == 1) {
+      height0 = 1;
+  }
+  if(debounceSwitch(Diode1Pin) == 1) {
+      height1 = 1;
+  }
 }
