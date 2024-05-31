@@ -3,3 +3,6 @@
 
 #remove pycache from git 
 __pycache__/
+
+#venv
+venv/
