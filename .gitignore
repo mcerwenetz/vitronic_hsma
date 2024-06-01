@@ -1,1 +1,9 @@
 *.jpg
+#env vars
+.env
+
+#remove pycache from git 
+__pycache__/
+
+#venv
+venv/
