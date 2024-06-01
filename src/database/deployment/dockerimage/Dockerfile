@@ -17,4 +17,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY checkexpiry.py /app/checkexpiry.py
 COPY sql_funcs.py /app/sql_funcs.py
 # Run the Python script
-CMD ["python3", "checkexpiry.py","2"]
+CMD ["python3", "checkexpiry.py"]

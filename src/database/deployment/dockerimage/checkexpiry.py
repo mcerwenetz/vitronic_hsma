@@ -18,6 +18,7 @@ DATABASE_PORT = os.getenv('DATABASE_PORT')
 DATABASE_USER = os.getenv('DATABASE_USER')
 DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
 DATABASE = os.getenv('DATABASE')
+MINS= os.getenv('DURATION')
 
 #table indizies
 ID = 0
@@ -28,12 +29,12 @@ LASTSEENAT = 4
 EXPECTEDNEXT = 5
 STATUS = 6
 
-mins = 0
+mins = 120 #int(MINS)
 def main():
     try:
-        # Establish a connection to the PostgreSQL database
+        #Establish a connection to PostgerSQL database
         connection = psycopg2.connect(dbname=DATABASE, user=DATABASE_USER, password=DATABASE_PASSWORD, host=DATABASE_HOST, port=DATABASE_PORT)
-
+        
         # Create a cursor object using the connection
         cursor = connection.cursor()
 
@@ -45,6 +46,7 @@ def main():
         print("Error while connecting to PostgreSQL:", error)
 
     stopTime = datetime.datetime.now() + datetime.timedelta(minutes=mins)
+    print("stopping evaluation at " + str(stopTime))
 
     while datetime.datetime.now() < stopTime:
         ret = getAllLates(cursor)
@@ -72,9 +74,9 @@ def main():
 
 #Call main
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("faslche anzahl an commandozeilenargumenten - minuten werden auf 5 gesetzt")
-        mins = 1
-    else:
-        mins = int(sys.argv[1])
+   # if len(sys.argv) != 2:
+   #     print("faslche anzahl an commandozeilenargumenten - minuten werden auf 5 gesetzt")
+   #     mins = 1
+   # else:
+   #     mins = int(sys.argv[1])
     main()
