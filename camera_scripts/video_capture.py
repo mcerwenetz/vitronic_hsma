@@ -28,8 +28,9 @@ def check_activity(background_subtractor, camera, max_activity, orb):
             im = cv2.bitwise_and(im, im, mask=fgmask)
             im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
             kp, des = orb.detectAndCompute(im, None)
-            im = cv2.drawKeypoints(im, kp, None, color=(0,255,0), flags=None)
-            cv2.imwrite("detected_image.jpg",im)
+            # im = cv2.drawKeypoints(im, kp, None, color=(0,255,0), flags=None)
+            # cv2.imwrite("detected_image.jpg",im)
+            print(des)
 
 
 def main():
