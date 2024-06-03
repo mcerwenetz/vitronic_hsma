@@ -62,7 +62,8 @@ def main():
 
     ser.reset_input_buffer()
     img_list = []
-    
+    print("[INFO] waiting for package")
+
     while(True):
         img_list = []
         if ser.in_waiting > 0:
@@ -80,8 +81,8 @@ def main():
                     i.save(f"{e}.jpg")
             else:
                 vals = line.split(" ")
-                print(f"interrupt time {vals[0]} ms")
-                print(f"taking pictures took: {(ts)} s")
+                print(f"[INFO] interrupt time {vals[0]} ms")
+                print(f"[INFO] taking pictures took: {(ts)} s")
                 used_image = int(int(vals[0])/(ts * 1000)) +1
                 print(f"[INFO] used image: {used_image}")
                 
