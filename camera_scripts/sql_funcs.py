@@ -31,14 +31,14 @@ def clearTable(connection, cursor):
 
     return
 
-def addEntry(connection, cursor, gate, classification): # 1 good 0 bad
+def addEntry(connection, cursor, gate, classification): # classification: 1 good 0 bad
     """this method will add a new paket entry to the paket table in the database"""
     lenght = random.randint(1,20)
     higth = random.randint(1,5)
     lastgate = gate
     lastSeen = datetime.datetime.now()
     expectedNextGate = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
-    isOK = classification #entweder ok oder defekt
+    isOK = classification #entweder ok 1 oder defekt 0
     isCHINA = 0
     status = isOK | isCHINA
     try:
@@ -64,10 +64,11 @@ def printEntry(entry):
     entries=["ID", "length", "height", "lastgate", "lastseenat", "expectedNext", "status"]
     for i, val in enumerate(entry):
         if(entries[i] != "status"):
-            print(entries[i] + ": " + str(val))
+            print((entries[i]).ljust(13) + ": " + str(val))
         else:
             binrepresentation= (bin(val)[2:]).zfill(4)
-            print(entries[i] + ": " + str(binrepresentation))
+            print((entries[i]).ljust(13) + ": " + str(binrepresentation))
+    print("\n"+ ('#') * 41+"\n")
     return
 
 def updateTable(connection, cursor, paketId):
