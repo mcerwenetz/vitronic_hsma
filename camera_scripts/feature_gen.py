@@ -95,7 +95,7 @@ def main():
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
                 kp, des = orb.detectAndCompute(im, None)
                 #im = PIL.Image.fromarray(i)
-                result = (model.infer(image=im))
+                result = (model.infer(image=f"{used_image}.png"))
                 ts_fc_1 = time()
                 print("[INFO] Finished classification and feature detection")
                 print("[INFO] Results: ")
