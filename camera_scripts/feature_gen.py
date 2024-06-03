@@ -6,11 +6,19 @@ import matplotlib.pyplot as plt
 import sys
 import inference
 import serial
+import psycopg2
+import sql_funcs
 
 MAX_ACTIVITY_RATION_THRESHOLD = 0.4
 LEARN_ITERATIONS=20
 
 ser = serial.Serial('/dev/ttyACM0', 115200, timeout = 1)
+
+def setup_db():
+    connection = psycopg2.connect(dbname="vitronicdb", user="vitronic",
+                                  password="vitronicpasswd", host="141.19.96.152", port="5432")
+    cursor = connection.cursor()
+    return connection,cursor
 
 def learn_mask(background_subtractor, camera):
     print("learning")
@@ -41,7 +49,9 @@ def get_best_picture(background_subtractor,img_list):
         return index, fg_list[index]     
 
 def main():
-    
+    print("[INFO] initiation database connection")
+    connection, db_cursor = setup_db()
+    print("[INFO] initiation database connection finished")
     print("[INFO] starting camera setup")
     camera = picamera2.Picamera2()
     camera.configure(camera.create_preview_configuration(
@@ -79,6 +89,7 @@ def main():
     img_list = []
     print("[INFO] waiting for packages")
     while(True):
+        status = 1
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             
@@ -107,7 +118,11 @@ def main():
                 result = (model.infer(image=img_list[used_image]))
                 ts_fc_1 = time()
                 features = {"gate":0,"feature_vector":des,"classifictaion":result[0].predicted_classes[0]}
-                print(features)
+
+                if result[0].predicted_classes[0] == "bad":
+                    status = 0
+
+
                 print("[INFO] Finished classification and feature detection")
                 print("[INFO] Results: ")
                 print()
@@ -116,6 +131,9 @@ def main():
                 print(f"[INFO] Feature Vector: {des}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
+                print("[INFO] sending querry to database")
+                sql_funcs.addEntry(connection,db_cursor,0,status)
+                print("[INFO] finished sending querry to database")
                 img_list = []
 
 if __name__ == "__main__":
