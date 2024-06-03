@@ -31,21 +31,22 @@ def clearTable(connection, cursor):
 
     return
 
-def addEntry(connection, cursor):
+def addEntry(connection, cursor, gate, classification): # 1 good 0 bad
     """this method will add a new paket entry to the paket table in the database"""
     lenght = random.randint(1,20)
     higth = random.randint(1,5)
+    lastgate = gate
     lastSeen = datetime.datetime.now()
     expectedNextGate = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
-    isOK = STATI[0] if (random.randint(1,200) % 2 == 0) else STATI[1] #entweder ok oder defekt
-    isCHINA = STATI[2] if (random.randint(1,200) % 2 == 0) else 0 # entweder china oder nicht
+    isOK = classification #entweder ok oder defekt
+    isCHINA = 0
     status = isOK | isCHINA
     try:
         # Define the INSERT statement with placeholders (%s)
         insert_query = "INSERT INTO paket (lenght, height, lastgate , lastseenat,expectednext,status) VALUES (%s, %s, %s, %s, %s, %s);"
 
         # Sample data to be inserted
-        user_data = (lenght,higth, 1 , lastSeen, expectedNextGate, status)
+        user_data = (lenght,higth, lastgate , lastSeen, expectedNextGate, status)
 
         # Execute the INSERT statement
         cursor.execute(insert_query, user_data)
