@@ -77,8 +77,7 @@ def main():
 
     ser.reset_input_buffer()
     img_list = []
-    print("[INFO] waiting for package")
-    current_activity = 0 
+    print("[INFO] waiting for packages")
     while(True):
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
@@ -107,13 +106,17 @@ def main():
                 kp, des = orb.detectAndCompute(im, None)
                 result = (model.infer(image=img_list[used_image]))
                 ts_fc_1 = time()
+                features = {"gate":0,"feature_vector":des,"classifictaion":result[0].predicted_classes[0]}
+
                 print("[INFO] Finished classification and feature detection")
                 print("[INFO] Results: ")
-                print(f"[INFO] Classification: {result[0].predicted_classes}")
-                print(f"[INFO] Features: {des}")
+                print()
+                print(f"[INFO] Gate: {features["gate"]}")
+                print(f"[INFO] Classification: {features["classification"]}")
+                print(f"[INFO] Feature Vector: {features["feature_vector"]}")
+                print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
                 img_list = []
-
 
 if __name__ == "__main__":
     main()
