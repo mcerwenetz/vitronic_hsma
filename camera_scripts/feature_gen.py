@@ -121,8 +121,8 @@ def main():
 
     ser.reset_input_buffer()
     print("[INFO] waiting for packages")
+    pc = 0
     while(True):
-        pc = 0
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             
