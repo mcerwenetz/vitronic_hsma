@@ -89,7 +89,7 @@ def main():
                 ts_fc_0 = time()
                 im = np.array(img_list[used_image])
                 fgmask = background_subtractor.apply(im)
-                im = cv2.bitwise_and(img_list[used_image], img_list[used_image], mask=fgmask)
+                im = cv2.bitwise_and(im,im, mask=fgmask)
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
                 kp, des = orb.detectAndCompute(im, None)
                 result = (model.infer(image=img_list[used_image]))
