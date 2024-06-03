@@ -36,6 +36,8 @@ def get_best_picture(background_subtractor,img_list):
             tmp_list.append(np.count_nonzero(fgmask))
 
         index = tmp_list.index(max(tmp_list))
+        print(f"[INFO] Best picture is : {index}.jpg")
+
         return index, fg_list[index]     
 
 def main():
