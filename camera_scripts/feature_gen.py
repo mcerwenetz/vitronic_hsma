@@ -1,4 +1,3 @@
-import PIL.Image
 import numpy as np
 import cv2
 import picamera2
@@ -7,7 +6,6 @@ import matplotlib.pyplot as plt
 import sys
 import inference
 import serial
-import PIL
 
 MAX_ACTIVITY_RATION_THRESHOLD = 0.4
 LEARN_ITERATIONS=20
@@ -72,15 +70,14 @@ def main():
             if line == "interrupted light barrier":
                 for i in range(num_pics):
                     ts1 = time()
-                    img = camera.capture_array()
+                    img = camera.capture_image()
                     img_list.append(img)
                     i+=1
                     sleep(shutter_speed)
                     ts2 = time()
                     ts = (ts2-ts1)
                 for e,i in enumerate(img_list):
-                    img = PIL.Image.fromarray(i)
-                    img.save(f"{e}.png")
+                    i.save(f"{e}.jpg")
             else:
                 vals = line.split(" ")
                 print(f"[INFO] interrupt time {vals[0]} ms")
@@ -90,12 +87,12 @@ def main():
                 
                 print("[INFO] Starting classification and feature detection")
                 ts_fc_0 = time()
-                fgmask = background_subtractor.apply(img_list[used_image])
+                im = np.array(img_list[used_image])
+                fgmask = background_subtractor.apply(im)
                 im = cv2.bitwise_and(img_list[used_image], img_list[used_image], mask=fgmask)
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
                 kp, des = orb.detectAndCompute(im, None)
-                #im = PIL.Image.fromarray(i)
-                result = (model.infer(image=f"{used_image}.png"))
+                result = (model.infer(image=img_list[used_image]))
                 ts_fc_1 = time()
                 print("[INFO] Finished classification and feature detection")
                 print("[INFO] Results: ")
