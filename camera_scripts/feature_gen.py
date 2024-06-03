@@ -8,6 +8,7 @@ import inference
 import serial
 import psycopg2
 import sql_funcs
+import threading
 
 MAX_ACTIVITY_RATION_THRESHOLD = 0.4
 LEARN_ITERATIONS=20
@@ -47,6 +48,37 @@ def get_best_picture(background_subtractor,img_list):
         print(f"[INFO] Best picture is : {index}.jpg")
 
         return index, fg_list[index]     
+
+def feature_thread_func(line,img_list,connection,db_cursor,background_subtractor):
+    vals = line.split(" ")
+    print(f"[INFO] interrupt time {vals[0]} ms")
+    print(f"[INFO] taking pictures took: {(ts)} s")
+    used_image, fgmask = get_best_picture(background_subtractor,img_list)
+    print("[INFO] Starting classification and feature detection")
+    ts_fc_0 = time()
+    im = np.array(img_list[used_image])
+    im = cv2.bitwise_and(im,im, mask=fgmask)
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    kp, des = orb.detectAndCompute(im, None)
+    result = (model.infer(image=img_list[used_image]))
+    ts_fc_1 = time()
+    features = {"gate":0,"feature_vector":des,"classifictaion":result[0].predicted_classes[0]}
+
+    if result[0].predicted_classes[0] == "bad":
+        status = 0
+
+
+    print("[INFO] Finished classification and feature detection")
+    print("[INFO] Results: ")
+    print()
+    print(f"[INFO] Gate: 0")
+    print(f"[INFO] Classification: {result[0].predicted_classes[0]}")
+    print(f"[INFO] Feature Vector: {des}")
+    print()
+    print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
+    print("[INFO] sending querry to database")
+    sql_funcs.addEntry(connection,db_cursor,0,status)
+    print("[INFO] finished sending querry to database")
 
 def main():
     print("[INFO] initiation database connection")
@@ -105,35 +137,9 @@ def main():
                 for e,i in enumerate(img_list):
                     i.save(f"{e}.jpg")
             else:
-                vals = line.split(" ")
-                print(f"[INFO] interrupt time {vals[0]} ms")
-                print(f"[INFO] taking pictures took: {(ts)} s")
-                used_image, fgmask = get_best_picture(background_subtractor,img_list)
-                print("[INFO] Starting classification and feature detection")
-                ts_fc_0 = time()
-                im = np.array(img_list[used_image])
-                im = cv2.bitwise_and(im,im, mask=fgmask)
-                im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-                kp, des = orb.detectAndCompute(im, None)
-                result = (model.infer(image=img_list[used_image]))
-                ts_fc_1 = time()
-                features = {"gate":0,"feature_vector":des,"classifictaion":result[0].predicted_classes[0]}
 
-                if result[0].predicted_classes[0] == "bad":
-                    status = 0
-
-
-                print("[INFO] Finished classification and feature detection")
-                print("[INFO] Results: ")
-                print()
-                print(f"[INFO] Gate: 0")
-                print(f"[INFO] Classification: {result[0].predicted_classes[0]}")
-                print(f"[INFO] Feature Vector: {des}")
-                print()
-                print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-                print("[INFO] sending querry to database")
-                sql_funcs.addEntry(connection,db_cursor,0,status)
-                print("[INFO] finished sending querry to database")
+                thread = threading.Thread(target = feature_thread_func, args=(line,img_list,connection,db_cursor,background_subtractor))
+                thread.start()
                 img_list = []
 
 if __name__ == "__main__":
