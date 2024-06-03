@@ -55,12 +55,7 @@ def main():
                 print(used_image)
                 result = (model.infer(image=f"{used_image}.jpg"))
                 print(result[0].predicted_classes)
-#    for i in range(num_pics):
- #       ts1 = time()
-  #      
-   #     ts2 = time()
-    #    
-     #   print((ts2-ts1))
+
 
 
 
