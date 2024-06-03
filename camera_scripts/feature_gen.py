@@ -125,6 +125,8 @@ def main():
             line = ser.readline().decode('utf-8').rstrip()
             
             if line == "interrupted light barrier":
+                print("[INFO] package detected")
+
                 img_list = []
                 ts1 = time()
                 for i in range(num_pics):
@@ -140,6 +142,7 @@ def main():
 
                 thread = threading.Thread(target = feature_thread_func, args=(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts))
                 thread.start()
+                print("[INFO] thread started")
 
 if __name__ == "__main__":
     main()
