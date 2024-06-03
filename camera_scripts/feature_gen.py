@@ -111,9 +111,9 @@ def main():
                 print("[INFO] Finished classification and feature detection")
                 print("[INFO] Results: ")
                 print()
-                print(f"[INFO] Gate: {features["gate"]}")
-                print(f"[INFO] Classification: {features["classification"]}")
-                print(f"[INFO] Feature Vector: {features["feature_vector"]}")
+                print(f"[INFO] Gate: 0")
+                print(f"[INFO] Classification: {result[0].predicted_classes[0]}")
+                print(f"[INFO] Feature Vector: {des}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
                 img_list = []
