@@ -65,7 +65,6 @@ def main():
     print("[INFO] waiting for package")
 
     while(True):
-        img_list = []
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             if line == "interrupted light barrier":
@@ -99,7 +98,7 @@ def main():
                 print(f"[INFO] Classification: {result[0].predicted_classes}")
                 print(f"[INFO] Features: {des}")
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-
+                img_list = []
 
 
 if __name__ == "__main__":
