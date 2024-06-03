@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import cv2
 import picamera2
@@ -121,12 +122,14 @@ def main():
     ser.reset_input_buffer()
     print("[INFO] waiting for packages")
     while(True):
+        pc = 0
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             
             if line == "interrupted light barrier":
                 print("[INFO] package detected")
-
+                pc +=1
+                os.mkdir(f"{pc}_data")
                 img_list = []
                 ts1 = time()
                 for i in range(num_pics):
@@ -137,7 +140,7 @@ def main():
                 ts2 = time()
                 ts = (ts2-ts1)
                 for e,i in enumerate(img_list):
-                    i.save(f"{e}.jpg")
+                    i.save(f"{pc}_data/{e}.jpg")
             else:
 
                 thread = threading.Thread(target = feature_thread_func, args=(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts))
