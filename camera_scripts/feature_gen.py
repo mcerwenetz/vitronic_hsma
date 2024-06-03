@@ -50,6 +50,7 @@ def get_best_picture(background_subtractor,img_list):
         return index, fg_list[index]     
 
 def feature_thread_func(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts):
+    status = 1
     vals = line.split(" ")
     print(f"[INFO] interrupt time {vals[0]} ms")
     print(f"[INFO] taking pictures took: {(ts)} s")
@@ -121,7 +122,6 @@ def main():
     img_list = []
     print("[INFO] waiting for packages")
     while(True):
-        status = 1
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             
