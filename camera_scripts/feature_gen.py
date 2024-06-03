@@ -49,7 +49,7 @@ def get_best_picture(background_subtractor,img_list):
 
         return index, fg_list[index]     
 
-def feature_thread_func(line,img_list,connection,db_cursor,background_subtractor):
+def feature_thread_func(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts):
     vals = line.split(" ")
     print(f"[INFO] interrupt time {vals[0]} ms")
     print(f"[INFO] taking pictures took: {(ts)} s")
@@ -138,7 +138,7 @@ def main():
                     i.save(f"{e}.jpg")
             else:
 
-                thread = threading.Thread(target = feature_thread_func, args=(line,img_list,connection,db_cursor,background_subtractor))
+                thread = threading.Thread(target = feature_thread_func, args=(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts))
                 thread.start()
                 img_list = []
 
