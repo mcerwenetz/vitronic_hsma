@@ -119,13 +119,13 @@ def main():
         num_pics = 100
 
     ser.reset_input_buffer()
-    img_list = []
     print("[INFO] waiting for packages")
     while(True):
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             
             if line == "interrupted light barrier":
+                img_list = []
                 ts1 = time()
                 for i in range(num_pics):
                     img = camera.capture_image()
@@ -140,7 +140,6 @@ def main():
 
                 thread = threading.Thread(target = feature_thread_func, args=(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts))
                 thread.start()
-                img_list = []
 
 if __name__ == "__main__":
     main()
