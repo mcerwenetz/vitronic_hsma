@@ -24,6 +24,19 @@ def learn_mask(background_subtractor, camera):
     print("finished learning")
     return max_activity
 
+def get_best_picture(background_subtractor,img_list):
+        print("[INFO] getting best picture")
+
+        tmp_list = []
+        fg_list = []
+        for e,i in enumerate(img_list):
+            i = np.array(i)
+            fgmask = background_subtractor.apply(i)
+            fg_list.append(fgmask)
+            tmp_list.append(np.count_nonzero(fgmask))
+
+        index = tmp_list.index(max(tmp_list))
+        return index, fg_list[index]     
 
 def main():
     
@@ -63,32 +76,30 @@ def main():
     ser.reset_input_buffer()
     img_list = []
     print("[INFO] waiting for package")
-
+    current_activity = 0 
     while(True):
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
+            
             if line == "interrupted light barrier":
+                ts1 = time()
                 for i in range(num_pics):
-                    ts1 = time()
                     img = camera.capture_image()
                     img_list.append(img)
                     i+=1
                     sleep(shutter_speed)
-                    ts2 = time()
-                    ts = (ts2-ts1)
+                ts2 = time()
+                ts = (ts2-ts1)
                 for e,i in enumerate(img_list):
                     i.save(f"{e}.jpg")
             else:
                 vals = line.split(" ")
                 print(f"[INFO] interrupt time {vals[0]} ms")
                 print(f"[INFO] taking pictures took: {(ts)} s")
-                used_image = int(int(vals[0])/(ts * 1000)) +1
-                print(f"[INFO] used image: {used_image}")
-                
+                used_image, fgmask = get_best_picture(background_subtractor,img_list)
                 print("[INFO] Starting classification and feature detection")
                 ts_fc_0 = time()
                 im = np.array(img_list[used_image])
-                fgmask = background_subtractor.apply(im)
                 im = cv2.bitwise_and(im,im, mask=fgmask)
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
                 kp, des = orb.detectAndCompute(im, None)
