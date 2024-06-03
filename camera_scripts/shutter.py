@@ -18,7 +18,7 @@ def main():
     camera.set_controls({"ExposureTime":500})
     model = inference.get_model("classification-ofjuw/3")
 
-    camera.start()
+    camera.start()#ys
 
     if sys.argv[1]:
         #argv = Hz, gets calculated to seconds for sleeping 
