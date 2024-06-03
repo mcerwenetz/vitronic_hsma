@@ -70,7 +70,7 @@ def main():
             if line == "interrupted light barrier":
                 for i in range(num_pics):
                     ts1 = time()
-                    img = camera.capture_image()
+                    img = camera.capture_array()
                     img_list.append(img)
                     i+=1
                     sleep(shutter_speed)
