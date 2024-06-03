@@ -107,7 +107,7 @@ def main():
                 result = (model.infer(image=img_list[used_image]))
                 ts_fc_1 = time()
                 features = {"gate":0,"feature_vector":des,"classifictaion":result[0].predicted_classes[0]}
-
+                print(features)
                 print("[INFO] Finished classification and feature detection")
                 print("[INFO] Results: ")
                 print()
