@@ -80,7 +80,7 @@ def main():
                     ts = (ts2-ts1)
                 for e,i in enumerate(img_list):
                     img = PIL.Image.fromarray(i)
-                    img.save(f"{e}.jpg")
+                    img.save(f"{e}.png")
             else:
                 vals = line.split(" ")
                 print(f"[INFO] interrupt time {vals[0]} ms")
