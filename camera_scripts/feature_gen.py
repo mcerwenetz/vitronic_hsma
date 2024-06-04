@@ -66,7 +66,7 @@ def orb_func(orb,im,fgmask):
 
 def main():
     print("[INFO] starting database setup")
-    connection, db_cursor = setup_db()
+    #connection, db_cursor = setup_db()
     print("[INFO] finished database setup")
 
     print("[INFO] starting camera setup")
@@ -157,7 +157,7 @@ def main():
                 print(f"[INFO] Feature Vector: {des}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-                sql_funcs.addEntry(connection,db_cursor,0,status)
+                #sql_funcs.addEntry(connection,db_cursor,0,status)
                 print("[INFO] database query was send")
 
 
