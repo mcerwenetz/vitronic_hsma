@@ -4,8 +4,8 @@ from typing import Any, Iterable, Mapping
 
 class worker_Thread(Thread):
 
-    def __init__(self,target) -> None:
-        Thread.__init__(self,target)
+    def __init__(self,target,args) -> None:
+        Thread.__init__(self,target,args=args)
         self.target = target
         self.result = None
     def run(self):
