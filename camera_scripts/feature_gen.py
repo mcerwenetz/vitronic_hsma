@@ -63,6 +63,8 @@ def orb_func(orb,im,fgmask):
     kp, des = orb.detectAndCompute(im, None)
     return des
 
+
+
 def main():
     print("[INFO] starting database setup")
     #connection, db_cursor = setup_db()
@@ -104,6 +106,8 @@ def main():
     ser.reset_input_buffer()
     print("[INFO] waiting for packages")
     pc = 0
+    pool  = ThreadPool(processes=2)
+
     while(True):
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
@@ -149,7 +153,7 @@ def main():
                 if cl_result == "bad":
                     status = 0
 
-
+                print()
                 print("[INFO] Finished classification and feature detection")
                 print("[INFO] Results: ")
                 print()
