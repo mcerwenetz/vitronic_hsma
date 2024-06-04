@@ -154,7 +154,7 @@ def main():
                 print()
                 print(f"[INFO] Gate: 0")
                 print(f"[INFO] Classification: {cl_result}")
-                print(f"[INFO] Feature Vector: {des}")
+                print(f"[INFO] Feature Vector: {orb_result}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
                 #sql_funcs.addEntry(connection,db_cursor,0,status)
