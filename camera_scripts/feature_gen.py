@@ -49,14 +49,14 @@ def get_best_picture(background_subtractor,img_list):
         print(f"[INFO] Best picture is : {index}.jpg")
 
         return index, fg_list[index]     
-def cl_model_func(model,im,res):
+def cl_model_func(model,im):
     print("[INFO] Starting classification")
     result = (model.infer(image=im))
 
     return result[0].predicted_classes[0]
 
 
-def orb_func(orb,im,fgmask,res):
+def orb_func(orb,im,fgmask):
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
