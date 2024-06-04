@@ -9,8 +9,7 @@ import inference
 import serial
 import psycopg2
 import sql_funcs
-import threading
-import thread_class
+from multiprocessing.pool import ThreadPool
 
 MAX_ACTIVITY_RATION_THRESHOLD = 0.4
 LEARN_ITERATIONS=20
@@ -50,15 +49,14 @@ def get_best_picture(background_subtractor,img_list):
         print(f"[INFO] Best picture is : {index}.jpg")
 
         return index, fg_list[index]     
-
-def cl_model_func(model,im):
+def cl_model_func(model,im,res):
     print("[INFO] Starting classification")
     result = (model.infer(image=im))
+
     return result[0].predicted_classes[0]
 
 
-
-def orb_func(orb,im,fgmask):
+def orb_func(orb,im,fgmask,res):
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -113,7 +111,7 @@ def main():
             if line == "interrupted light barrier":
                 print("[INFO] package detected")
                 pc +=1
-                os.makedirs(f"{pc}_data",exist_ok=True)
+                os.makedirs(f"{pc}_data")
                 img_list = []
                 ts1 = time()
                 for i in range(num_pics):
@@ -135,19 +133,17 @@ def main():
 
                 used_image, fgmask = get_best_picture(background_subtractor,img_list)
 
-                thread_orb = thread_class.worker_Thread(target = orb_func, args=(orb,img_list[used_image],fgmask))
-                thread_model = thread_class.worker_Thread(target = cl_model_func, args=(model,img_list[used_image]))
-                thread_orb.start()
-                thread_model.start()
-                thread_orb.join()
-                thread_model.join() 
+                pool  = ThreadPool(processes=2)
 
+                orb_calc = pool.apply_async(orb_func,args=(orb,img_list[used_image],fgmask))
+                cl_calc = pool.apply_async(cl_model_func, args=(model,img_list[used_image]))
+
+                orb_result = orb_calc.get()
+                cl_result = cl_calc.get()
+                
                 ts_fc_1 = time()
 
                 # features = {"gate":0,"feature_vector":des,"classifictaion":cl_result[0].predicted_classes[0]}
-                
-                cl_result = thread_model.result
-                des = thread_orb.result
 
                 if cl_result == "bad":
                     status = 0
