@@ -109,6 +109,7 @@ def main():
             line = ser.readline().decode('utf-8').rstrip()
             
             if line == "interrupted light barrier":
+                total_time_0 = time() 
                 print("[INFO] package detected")
                 pc +=1
                 os.makedirs(f"{pc}_data",exist_ok=True)
@@ -159,6 +160,7 @@ def main():
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
                 #sql_funcs.addEntry(connection,db_cursor,0,status)
                 print("[INFO] database query was send")
+                print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
 
 
 if __name__ == "__main__":
