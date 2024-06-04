@@ -133,7 +133,8 @@ def main():
                 ts_fc_0 = time()
 
                 used_image, fgmask = get_best_picture(background_subtractor,img_list)
-                des,cl_result = 0
+                des = 0
+                cl_result = ""
                 thread_orb = threading.Thread(target = orb_func, args=(orb,img_list[used_image],fgmask,des))
                 thread_model = threading.Thread(target = cl_model_func, args=(model,img_list[used_image],cl_result))
                 thread_orb.start()
