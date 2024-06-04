@@ -50,19 +50,19 @@ def get_best_picture(background_subtractor,img_list):
 
         return index, fg_list[index]     
 
-def cl_model_func(model,im):
+def cl_model_func(model,im,res):
     print("[INFO] Starting classification")
     result = (model.infer(image=im))
+    res = result[0].predicted_classes[0]
 
-    return result[0].predicted_classes[0]
 
 
-def orb_func(orb,im,fgmask):
+def orb_func(orb,im,fgmask,res):
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     kp, des = orb.detectAndCompute(im, None)
-    return des
+    res = des
 
 def main():
     print("[INFO] starting database setup")
@@ -133,14 +133,14 @@ def main():
                 ts_fc_0 = time()
 
                 used_image, fgmask = get_best_picture(background_subtractor,img_list)
-
-                thread_orb = threading.Thread(target = orb_func, args=(orb,img_list[used_image],fgmask))
-                thread_model = threading.Thread(target = cl_model_func, args=(model,img_list[used_image]))
+                des,cl_result = 0
+                thread_orb = threading.Thread(target = orb_func, args=(orb,img_list[used_image],fgmask,des))
+                thread_model = threading.Thread(target = cl_model_func, args=(model,img_list[used_image],cl_result))
                 thread_orb.start()
                 thread_model.start()
 
-                des = thread_orb.join()
-                cl_result = thread_model.join() 
+                thread_orb.join()
+                thread_model.join() 
                 ts_fc_1 = time()
 
                 # features = {"gate":0,"feature_vector":des,"classifictaion":cl_result[0].predicted_classes[0]}
