@@ -50,42 +50,25 @@ def get_best_picture(background_subtractor,img_list):
 
         return index, fg_list[index]     
 
-def feature_thread_func(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts):
-    status = 1
-    vals = line.split(" ")
-    print(f"[INFO] interrupt time {vals[0]} ms")
-    print(f"[INFO] taking pictures took: {(ts)} s")
-    used_image, fgmask = get_best_picture(background_subtractor,img_list)
-    print("[INFO] Starting classification and feature detection")
-    ts_fc_0 = time()
-    im = np.array(img_list[used_image])
+def cl_model_func(model,im):
+    print("[INFO] Starting classification")
+    result = (model.infer(image=im))
+
+    return result[0].predicted_classes[0]
+
+
+def orb_func(orb,im,fgmask):
+    im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     kp, des = orb.detectAndCompute(im, None)
-    result = (model.infer(image=img_list[used_image]))
-    ts_fc_1 = time()
-    features = {"gate":0,"feature_vector":des,"classifictaion":result[0].predicted_classes[0]}
-
-    if result[0].predicted_classes[0] == "bad":
-        status = 0
-
-
-    print("[INFO] Finished classification and feature detection")
-    print("[INFO] Results: ")
-    print()
-    print(f"[INFO] Gate: 0")
-    print(f"[INFO] Classification: {result[0].predicted_classes[0]}")
-    print(f"[INFO] Feature Vector: {des}")
-    print()
-    print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-    print("[INFO] sending querry to database")
-    sql_funcs.addEntry(connection,db_cursor,0,status)
-    print("[INFO] finished sending querry to database")
+    return des
 
 def main():
-    print("[INFO] initiation database connection")
+    print("[INFO] starting database setup")
     connection, db_cursor = setup_db()
-    print("[INFO] initiation database connection finished")
+    print("[INFO] finished database setup")
+
     print("[INFO] starting camera setup")
     camera = picamera2.Picamera2()
     camera.configure(camera.create_preview_configuration(
@@ -106,7 +89,7 @@ def main():
 
     print("[INFO] setting up orb")
     orb = cv2.ORB.create()
-    print("[INFO] orb setup finished")
+    
 
     if sys.argv[1]:
         #argv = Hz, gets calculated to seconds for sleeping 
@@ -142,10 +125,41 @@ def main():
                 for e,i in enumerate(img_list):
                     i.save(f"{pc}_data/{e}.jpg")
             else:
+                status = 1
+                vals = line.split(" ")
+                print(f"[INFO] interrupt time {vals[0]} ms")
+                print(f"[INFO] taking pictures took: {(ts)} s")
+                
+                ts_fc_0 = time()
 
-                thread = threading.Thread(target = feature_thread_func, args=(model,orb,line,img_list,connection,db_cursor,background_subtractor,ts))
-                thread.start()
-                print("[INFO] thread started")
+                used_image, fgmask = get_best_picture(background_subtractor,img_list)
+
+                thread_orb = threading.Thread(target = orb_func, args=(orb,img_list[used_image],fgmask))
+                thread_model = threading.Thread(target = cl_model_func, args=(model,img_list[used_image]))
+                thread_orb.start()
+                thread_model.start()
+
+                des = thread_orb.join()
+                cl_result = thread_model.join() 
+                ts_fc_1 = time()
+
+                # features = {"gate":0,"feature_vector":des,"classifictaion":cl_result[0].predicted_classes[0]}
+
+                if cl_result == "bad":
+                    status = 0
+
+
+                print("[INFO] Finished classification and feature detection")
+                print("[INFO] Results: ")
+                print()
+                print(f"[INFO] Gate: 0")
+                print(f"[INFO] Classification: {cl_result}")
+                print(f"[INFO] Feature Vector: {des}")
+                print()
+                print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
+                sql_funcs.addEntry(connection,db_cursor,0,status)
+                print("[INFO] database query was send")
+
 
 if __name__ == "__main__":
     main()
