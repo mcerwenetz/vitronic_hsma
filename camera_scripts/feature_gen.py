@@ -112,7 +112,7 @@ def main():
             if line == "interrupted light barrier":
                 print("[INFO] package detected")
                 pc +=1
-                os.mkdir(f"{pc}_data")
+                os.makedirs(f"{pc}_data",exist_ok=True)
                 img_list = []
                 ts1 = time()
                 for i in range(num_pics):
