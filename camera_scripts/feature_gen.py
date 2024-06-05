@@ -58,9 +58,12 @@ def cl_model_func(model,im):
 
 
 def orb_func(orb,im,fgmask):
+
+
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    #im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite("orb_3.jpg",im)
     kp, des = orb.detectAndCompute(im, None)
     return des
 
@@ -77,7 +80,7 @@ def main():
     camera.configure(camera.create_preview_configuration(
         main={"format": 'XRGB8888', "size": (3780, 2464)}))
     # Exposure time. 100 = 1 ms
-    camera.set_controls({"ExposureTime":1000})
+    camera.set_controls({"ExposureTime":5000})
     camera.start()
     print("[INFO] finished camera setup")
     
@@ -91,7 +94,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create()
+    orb = cv2.ORB.create(100)
     
 
     if sys.argv[1]:
@@ -109,6 +112,8 @@ def main():
     print("[INFO] waiting for packages")
     pc = 0
     pool  = ThreadPool(processes=2)
+
+    des_list = []
 
     while(True):
         if ser.in_waiting > 0:
@@ -148,6 +153,7 @@ def main():
                 orb_result = orb_calc.get()
                 cl_result = cl_calc.get()
                 
+                des_list.append(orb_result)
 
                 ts_fc_1 = time()
 
@@ -165,7 +171,7 @@ def main():
                 print(f"[INFO] Feature Vector: {orb_result}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-                sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result)
+                sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result,orb_result.shape)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
 
