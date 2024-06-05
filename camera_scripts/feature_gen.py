@@ -91,7 +91,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create()
+    orb = cv2.ORB.create(5)
     
 
     if sys.argv[1]:
@@ -177,9 +177,16 @@ def main():
 
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     ts_match_0 = time()
-    matches = bf.knnMatch(des_list[0], des_list[1],k=2)
+    matches = bf.match(des_list[0], des_list[1],k=2)
     ts_match_1 = time()
-    print(f"[INFO] Matches: {matches}")
+    good = []
+    for m, n in matches: 
+        # print("m.distance is <",m.distance,">  
+        # 1.001*n.distance is <",0.98*n.distance,">") 
+        if m.distance < 0.98 * n.distance: 
+            good.append([m]) 
+    
+    print(f"[INFO] Matches: {len(good)}")
     print(f"[INFO] time: {ts_match_1-ts_match_0}")
 
 if __name__ == "__main__":
