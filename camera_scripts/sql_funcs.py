@@ -129,7 +129,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         maxKey = [i for i in dic.keys() if dic[i] == maxValue ]
         print("Max key: " + str(maxKey))     
         
-        if maxValue  < 300:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
+        if maxValue  < 570:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
             insertNewParcel(connection, cursor, gate, classification, features, length, height)
             maxKey = 0
         else: # update the parcel entry with the found parcelId
