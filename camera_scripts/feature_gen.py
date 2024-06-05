@@ -91,7 +91,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create()
+    orb = cv2.ORB.create(100)
     
 
     if sys.argv[1]:
