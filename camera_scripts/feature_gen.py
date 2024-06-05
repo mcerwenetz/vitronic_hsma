@@ -174,10 +174,10 @@ def main():
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
                 if pc == 2:
                     break
-                
+
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     ts_match_0 = time()
-    matches = bf.match(des_list[0], des_list[1])
+    matches = bf.knnMatch(des_list[0], des_list[1],k=2)
     ts_match_1 = time()
     print(f"[INFO] Matches: {matches}")
     print(f"[INFO] time: {ts_match_1-ts_match_0}")
