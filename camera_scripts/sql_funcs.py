@@ -111,7 +111,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
                     dic[id] = dic[id] + 1
         maxValue = max(dic.values())
         maxKey=-1
-        maxKey = [i for i in dic.keys(): if dic[i] == maxValue]
+        maxKey = [i for i in dic.keys() if dic[i] == maxValue ]
         print("Max key: " + str(maxKey))     
         
         if maxValue  < 80:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
