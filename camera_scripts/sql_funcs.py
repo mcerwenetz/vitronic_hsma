@@ -113,7 +113,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             bf = cv2.BFMatcher()
             id = val[0]
             feature = np.frombuffer(val[1],dtype=np.uint8)
-            feature.reshape(500,32)
+            feature.reshape(100,32)
 
             print(type(features[0][0][0]))
             print(type(feature[0][0]))
