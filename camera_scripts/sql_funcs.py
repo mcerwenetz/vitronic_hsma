@@ -113,7 +113,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             bf = cv2.BFMatcher()
             id = val[0]
             feature = np.frombuffer(val[1],dtype=np.uint8)
-            feature = feature.reshape(1000,32)
+            feature = feature.reshape(500,32)
 
             print(features.shape)
             print(feature.shape)
@@ -121,7 +121,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             dic[id] = 0
             for m , n in matches:
-                if m.distance < 0.98 * n.distance:
+                if m.distance < 0.96 * n.distance:
                     dic[id] = dic[id] + 1
         maxValue = max(dic.values())
         print(maxValue)
