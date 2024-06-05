@@ -29,7 +29,7 @@ LASTSEENAT = 4
 EXPECTEDNEXT = 5
 STATUS = 6
 
-mins = 120 #int(MINS)
+mins = 2 #int(MINS)
 def main():
     try:
         #Establish a connection to PostgerSQL database

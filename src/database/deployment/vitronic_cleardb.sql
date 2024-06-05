@@ -1,1 +1,2 @@
-DROP TABLE paket;
+DROP TABLE parceldump;
+DROP TABLE parcel;

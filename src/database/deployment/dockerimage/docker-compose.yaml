@@ -3,10 +3,10 @@ version: '3'
 services:
   parcel_service:
     image: parcelwatchdog
-    restart: always
+    restart: never #always
     container_name: parcelService
     environment:
-      DATABASE_HOST: 172.17.0.1
+      DATABASE_HOST: 141.19.96.152
       DATABASE_PORT: 5432
       DATABASE_USER: vitronic
       DATABASE_PASSWORD: vitronicpasswd
