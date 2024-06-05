@@ -113,10 +113,12 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             id = val[0]
             feature = np.frombuffer(val[1],dtype=np.int8)
             feature.reshape(500,32)
-            print(type(feature))
 
             feature = np.array([[0,0,0,0],[0,0,0,0]])
             features = np.array([[0,0,0,0],[0,0,0,0]])
+            print(type(features))
+            print(type(feature))
+
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             dic[id] = 0
             for m , n in matches:
