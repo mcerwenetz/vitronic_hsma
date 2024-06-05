@@ -92,7 +92,7 @@ def updateParcel(connection, cursor, parcelId ,gate, classification, features, l
     return
 
 
-def addEntry(connection, cursor, gate, classification, features:np.ndarray, length = 1, height = 1): # classification: 1 good 2 bad
+def addEntry(connection, cursor, gate, classification, features:np.ndarray, shape, length = 1, height = 1): # classification: 1 good 2 bad
     """this method will find an existing db entry according to the feature vec. If no matching vector is found, a new entry is added"""
     #get all feature vectors and id -> feat vec vergleichen -> wenns übereinstimmt updaten! sont neuer Eintrag
     bf = cv2.BFMatcher()
@@ -113,7 +113,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             bf = cv2.BFMatcher()
             id = val[0]
             feature = np.frombuffer(val[1],dtype=np.uint8)
-            feature = feature.reshape(700,32)
+            feature = feature.reshape(shape[0],shape[1])
 
             # print(features.shape)
             # print(feature.shape)
