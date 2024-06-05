@@ -67,7 +67,7 @@ def orb_func(orb,im,fgmask):
 
 
 def main():
-    os.system('export ROBOFLOW_API_KEY="5BBeWc9fVb0WznH4RnJn"')
+    #os.system('export ROBOFLOW_API_KEY="5BBeWc9fVb0WznH4RnJn"')
     print("[INFO] starting database setup")
     #connection, db_cursor = setup_db()
     print("[INFO] finished database setup")
@@ -148,6 +148,9 @@ def main():
                 orb_result = orb_calc.get()
                 cl_result = cl_calc.get()
                 
+                orb_result.join()
+                cl_result.join()
+
                 ts_fc_1 = time()
 
                 # features = {"gate":0,"feature_vector":des,"classifictaion":cl_result[0].predicted_classes[0]}
