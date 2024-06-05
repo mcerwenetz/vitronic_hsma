@@ -43,7 +43,7 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    print("before"+features.shape())
+    print(features[0].shape())
     featureVecDB = features.tolist()
     print(len(featureVecDB))
     try:
