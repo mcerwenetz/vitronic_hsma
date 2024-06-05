@@ -110,6 +110,8 @@ def main():
     pc = 0
     pool  = ThreadPool(processes=2)
 
+    des_list = []
+
     while(True):
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
@@ -148,6 +150,7 @@ def main():
                 orb_result = orb_calc.get()
                 cl_result = cl_calc.get()
                 
+                des_list.append(orb_result)
 
                 ts_fc_1 = time()
 
@@ -165,10 +168,19 @@ def main():
                 print(f"[INFO] Feature Vector: {orb_result}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-                sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result)
+                #sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
-
+                if pc == 2:
+                    break
+    bf = cv2.BFMatcher()
+    matches = bf.knnMatch(des_list[0], des_list[1],k=2)
+    good = []
+    for m, n in matches: 
+        # print("m.distance is <",m.distance,">  
+        # 1.001*n.distance is <",0.98*n.distance,">") 
+        if m.distance < 0.98 * n.distance: 
+            good.append([m])
 
 if __name__ == "__main__":
     main()
