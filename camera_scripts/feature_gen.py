@@ -91,7 +91,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create(5)
+    orb = cv2.ORB.create()
     
 
     if sys.argv[1]:
@@ -174,10 +174,10 @@ def main():
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
                 if pc == 2:
                     break
-
+                
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     ts_match_0 = time()
-    matches = bf.match(des_list[0], des_list[1],k=2)
+    matches = bf.match(des_list[0], des_list[1])
     ts_match_1 = time()
     good = []
     for m, n in matches: 
