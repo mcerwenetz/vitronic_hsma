@@ -1,6 +1,7 @@
 import psycopg2
 import random
 import datetime
+import numpy as np
 
 #status of different packages
 # STATI[0] - OK | STATI[1] - DEFECTIVE | STATI[3] - CHINA | STATI[4] - LOST
@@ -14,6 +15,7 @@ LASTGATE = 3
 LASTSEENAT = 4
 EXPECTEDNEXT = 5
 STATUS = 6
+FEATUREVEC = 7
 
 #time to next gate
 SECONDS = 30
@@ -31,22 +33,21 @@ def clearTable(connection, cursor):
 
     return
 
-def addEntry(connection, cursor, gate, classification): # classification: 1 good 0 bad
+def addEntry(connection, cursor, gate, classification, features:numpy.ndarray, length = 1, height = 1): # classification: 1 good 0 bad
     """this method will add a new paket entry to the paket table in the database"""
-    lenght = random.randint(1,20)
-    higth = random.randint(1,5)
-    lastgate = gate
-    lastSeen = datetime.datetime.now()
-    expectedNextGate = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
-    isOK = classification #entweder ok 1 oder defekt 0
-    isCHINA = 0
-    status = isOK | isCHINA
+    lenghtDB = _length
+    heightDB = _height
+    lastgateDB = gate
+    lastSeenDB = datetime.datetime.now()
+    expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
+    statusDB = classification # 1: ok | 2: defekt
+    featureVecDB = features.tolist
     try:
         # Define the INSERT statement with placeholders (%s)
-        insert_query = "INSERT INTO paket (lenght, height, lastgate , lastseenat,expectednext,status) VALUES (%s, %s, %s, %s, %s, %s);"
+        insert_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
 
         # Sample data to be inserted
-        user_data = (lenght,higth, lastgate , lastSeen, expectedNextGate, status)
+        user_data = (lenghtDB , heigthDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, featureVecDB)
 
         # Execute the INSERT statement
         cursor.execute(insert_query, user_data)
@@ -61,7 +62,7 @@ def addEntry(connection, cursor, gate, classification): # classification: 1 good
 
 def printEntry(entry):
     """this method prints an entry of the db table formatted to the stdout"""
-    entries=["ID", "length", "height", "lastgate", "lastseenat", "expectedNext", "status"]
+    entries=["ID", "length", "height", "lastgate", "lastseenat", "expectedNext", "status", "featureVec"]
     for i, val in enumerate(entry):
         if(entries[i] != "status"):
             print((entries[i]).ljust(13) + ": " + str(val))
