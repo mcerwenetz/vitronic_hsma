@@ -168,7 +168,7 @@ def main():
                 print(f"[INFO] Feature Vector: {orb_result}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-                #sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result)
+                sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
                 if pc == 2:
