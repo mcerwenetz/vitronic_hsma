@@ -99,6 +99,12 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         cursor.execute(query)
         erg = cursor.fetchall()
         parcelIdFound = -1 #id of the parcel with the matching feature vec     
+        
+        if len(erg) == 0:
+            insertNewParcel(connection, cursor, gate, classification, features, length, height)
+            return
+
+        
         dic = dict()
         for val in erg:
             id = val[0]
