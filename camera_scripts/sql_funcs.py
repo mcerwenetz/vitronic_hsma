@@ -115,9 +115,9 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         print("Max key: " + str(maxKey))     
         
         if maxValue  < 80:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
-            insertNewParcel(connection, cursor, gate, classification, features:np.ndarray, lenght, height)
+            insertNewParcel(connection, cursor, gate, classification, features, length, height)
         else: # update the parcel entry with the found parcelId
-            updateParcel(connection, cursor, maxKey, gate, classification, features:np.ndarray, lenght, height)
+            updateParcel(connection, cursor, maxKey, gate, classification, features, length, height)
 
     except psycopg2.Error as error:
         # Handle any error that may occur during the INSERT operation
