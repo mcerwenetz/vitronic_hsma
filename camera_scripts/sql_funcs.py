@@ -2,6 +2,7 @@ import psycopg2
 import random
 import datetime
 import numpy as np
+import cv2
 
 #status of different packages
 # STATI[0] - OK | STATI[1] - DEFECTIVE | STATI[3] - CHINA | STATI[4] - LOST
@@ -33,7 +34,97 @@ def clearTable(connection, cursor):
 
     return
 
+def insertNewParcel(connection, cursor, gate, classification, features:np.ndarray, lenght, height):
+    """this method will add a new parcel to the parceldump table"""
+    lenghtDB = length
+    heightDB = height
+    lastgateDB = gate
+    lastSeenDB = datetime.datetime.now()
+    expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
+    statusDB = classification # 1: ok | 2: defekt
+    featureVecDB = features.tolist()
+    try:
+        # Define the INSERT statement with placeholders (%s)
+        insert_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+
+        # Sample data to be inserted
+        user_data = (lenghtDB , heightDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, featureVecDB)
+
+        # Execute the INSERT statement
+        cursor.execute(insert_query, user_data)
+
+        # Commit the transaction
+        connection.commit()
+
+    except psycopg2.Error as error:
+        # Handle any error that may occur during the INSERT operation
+        print("Error inserting data:", error)
+    return
+
+def updateParcel(connection, cursor, parcelId ,gate, classification, features:np.ndarray, lenght, height):
+    """this method will update an exisitng parcel entry in the parceldump db"""
+    lenghtDB = length
+    heightDB = height
+    lastgateDB = gate
+    lastSeenDB = datetime.datetime.now()
+    expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
+    statusDB = classification # 1: ok | 2: defekt
+    featureVecDB = features.tolist()
+    try:
+        # Define the INSERT statement with placeholders (%s)
+        update_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+        update_query = "UPDATE parceldump SET lenght=(%s), height=(%s), lastgate=(%s),lastseenat=(%s), expectednext=(%s), status=(%s) WHERE id = (%s);"
+        # Sample data to be inserted
+        user_data = (lenghtDB , heightDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, parcelId) #change feature vec to new feautreVEc or keep old feature vec?
+
+        # Execute the INSERT statement
+        cursor.execute(update_query, user_data)
+
+        # Commit the transaction
+        connection.commit()
+
+    except psycopg2.Error as error:
+        # Handle any error that may occur during the INSERT operation
+        print("Error inserting data:", error)
+    return
+
+
 def addEntry(connection, cursor, gate, classification, features:np.ndarray, length = 1, height = 1): # classification: 1 good 2 bad
+    """this method will find an existing db entry according to the feature vec. If no matching vector is found, a new entry is added"""
+    #get all feature vectors and id -> feat vec vergleichen -> wenns übereinstimmt updaten! sont neuer Eintrag
+    bf = cv2.BFMatcher()
+    try:
+        #get all ids and  featureVecs
+        query = "SELECT id, features FROM parceldump;"
+        cursor.execute(query)
+        erg = cursor.fetchall()
+        parcelIdFound = -1 #id of the parcel with the matching feature vec     
+        dic = dict()
+        for val in erg:
+            id = val[0]
+            feature = np.array(val[1])
+            matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
+            good = []
+            dic[id] = 0
+            for m , n in matches:
+                if m.distance < 0.98 * n.distance #a matching feature vec was found
+                    dic[id] = dic[id] + 1
+        maxValue = max(dic.values())
+        maxKey=-1
+        maxKey = [i for i in dic.keys(): if dic[i] == maxValue]
+        print("Max key: " + str(maxKey))     
+        
+        if maxValue  < 80:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
+            insertNewParcel(connection, cursor, gate, classification, features:np.ndarray, lenght, height)
+        else: # update the parcel entry with the found parcelId
+            updateParcel(connection, cursor, maxKey, gate, classification, features:np.ndarray, lenght, height)
+
+    except psycopg2.Error as error:
+        # Handle any error that may occur during the INSERT operation
+        print("Error inserting data:", error)
+    return
+
+def addEntryOld(connection, cursor, gate, classification, features:np.ndarray, length = 1, height = 1): # classification: 1 good 2 bad
     """this method will add a new parcel to the parceldump table"""
     lenghtDB = length
     heightDB = height
