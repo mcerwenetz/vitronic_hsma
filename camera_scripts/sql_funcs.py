@@ -35,8 +35,8 @@ def clearTable(connection, cursor):
 
 def addEntry(connection, cursor, gate, classification, features:numpy.ndarray, length = 1, height = 1): # classification: 1 good 2 bad
     """this method will add a new parcel to the parceldump table"""
-    lenghtDB = _length
-    heightDB = _height
+    lenghtDB = length
+    heightDB = height
     lastgateDB = gate
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)

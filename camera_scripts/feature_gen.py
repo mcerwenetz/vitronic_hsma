@@ -64,12 +64,12 @@ def orb_func(orb,im,fgmask):
     kp, des = orb.detectAndCompute(im, None)
     return des
 
-des_list = [] ##
+
 
 def main():
     #os.system('export ROBOFLOW_API_KEY="5BBeWc9fVb0WznH4RnJn"')
     print("[INFO] starting database setup")
-    #connection, db_cursor = setup_db()
+    connection, db_cursor = setup_db()
     print("[INFO] finished database setup")
 
     print("[INFO] starting camera setup")
@@ -91,7 +91,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create(100)
+    orb = cv2.ORB.create()
     
 
     if sys.argv[1]:
@@ -107,13 +107,10 @@ def main():
 
     ser.reset_input_buffer()
     print("[INFO] waiting for packages")
-
     pc = 0
-    
     pool  = ThreadPool(processes=2)
 
     while(True):
-
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             
@@ -150,15 +147,14 @@ def main():
 
                 orb_result = orb_calc.get()
                 cl_result = cl_calc.get()
-
-                des_list.append(orb_result)        ##
+                
 
                 ts_fc_1 = time()
 
                 # features = {"gate":0,"feature_vector":des,"classifictaion":cl_result[0].predicted_classes[0]}
 
                 if cl_result == "bad":
-                    status = 0
+                    status = 2
 
                 print()
                 print("[INFO] Finished classification and feature detection")
@@ -169,25 +165,10 @@ def main():
                 print(f"[INFO] Feature Vector: {orb_result}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-                #sql_funcs.addEntry(connection,db_cursor,0,status)
+                sql_funcs.addEntry(connection,db_cursor,0,status,orb_result)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
-                if pc == 2:
-                    break
-                
-    bf = cv2.BFMatcher()
-    ts_match_0 = time()
-    matches = bf.knnMatch(des_list[0], des_list[1],k=2)
-    ts_match_1 = time()
-    good = []
-    for m, n in matches: 
-        # print("m.distance is <",m.distance,">  
-        # 1.001*n.distance is <",0.98*n.distance,">") 
-        if m.distance < 0.98 * n.distance: 
-            good.append([m]) 
-    
-    print(f"[INFO] Matches: {len(good)}")
-    print(f"[INFO] time: {ts_match_1-ts_match_0}")
+
 
 if __name__ == "__main__":
     main()
