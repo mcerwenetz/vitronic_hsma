@@ -113,7 +113,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             bf = cv2.BFMatcher()
             id = val[0]
             feature = np.frombuffer(val[1],dtype=np.uint8)
-            feature = feature.reshape(500,32)
+            feature = feature.reshape(700,32)
 
             # print(features.shape)
             # print(feature.shape)
@@ -121,7 +121,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             dic[id] = 0
             for m , n in matches:
-                if m.distance < 0.96 * n.distance:
+                if m.distance < 0.99 * n.distance:
                     dic[id] = dic[id] + 1
         maxValue = max(dic.values())
         print(maxValue)
@@ -129,7 +129,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         maxKey = [i for i in dic.keys() if dic[i] == maxValue ]
         print("Max key: " + str(maxKey))     
         
-        if maxValue  < 290:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
+        if maxValue  < 300:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
             insertNewParcel(connection, cursor, gate, classification, features, length, height)
             maxKey = 0
         else: # update the parcel entry with the found parcelId
