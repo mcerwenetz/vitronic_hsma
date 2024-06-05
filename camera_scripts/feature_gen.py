@@ -148,8 +148,8 @@ def main():
                 orb_result = orb_calc.get()
                 cl_result = cl_calc.get()
                 
-                orb_result.join()
-                cl_result.join()
+                print(type(orb_result))
+                print(orb_result)
 
                 ts_fc_1 = time()
 
