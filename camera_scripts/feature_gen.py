@@ -91,7 +91,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create(100)
+    orb = cv2.ORB.create(500)
     
 
     if sys.argv[1]:
@@ -171,17 +171,7 @@ def main():
                 sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
-                if pc == 2:
-                    break
-    bf = cv2.BFMatcher()
-    matches = bf.knnMatch(des_list[0], des_list[1],k=2)
-    print(type(des_list[0][0][0]))
-    good = []
-    for m, n in matches: 
-        # print("m.distance is <",m.distance,">  
-        # 1.001*n.distance is <",0.98*n.distance,">") 
-        if m.distance < 0.98 * n.distance: 
-            good.append([m])
-    print(len(good))
+
+
 if __name__ == "__main__":
     main()
