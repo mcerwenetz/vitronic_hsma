@@ -44,15 +44,13 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    featureVecDB = BytesIO()
-    np.save(featureVecDB,features,allow_pickle=True)
-
+    featureVecDB = features.tobytes()
     try:
         # Define the INSERT statement with placeholders (%s)
         insert_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
 
         # Sample data to be inserted
-        user_data = (lenghtDB , heightDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, featureVecDB)
+        user_data = (lenghtDB , heightDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, psycopg2.Binary(featureVecDB))
 
         # Execute the INSERT statement
         cursor.execute(insert_query, user_data)
@@ -73,8 +71,8 @@ def updateParcel(connection, cursor, parcelId ,gate, classification, features:np
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    np_bytes = BytesIO()
-    featureVecDB = np.save(np_bytes,features,allow_pickle=True)
+
+    featureVecDB = features.tobytes()
     try:
         # Define the INSERT statement with placeholders (%s)
         update_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
@@ -113,8 +111,8 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         dic = dict()
         for val in erg:
             id = val[0]
-            feature = np.load(val[1],allow_pickle=True)
-            print(feature)
+            feature = np.frombuffer(val[1],dtype=np.int8)
+            feature.reshape(500,32)
 
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             dic[id] = 0
