@@ -109,8 +109,8 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         dic = dict()
         for val in erg:
             id = val[0]
-            print(id)
-
+            print(type(features))
+            print(type(val[1]))
             feature = np.array(val[1])
             img = PIL.Image.fromarray(feature)
             print(feature)
