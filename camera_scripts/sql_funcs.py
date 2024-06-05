@@ -43,7 +43,7 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    print(features[0].shape())
+    print(features.shape)
     featureVecDB = features.tolist()
     print(len(featureVecDB))
     try:
@@ -112,7 +112,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         for val in erg:
             id = val[0]
             feature = np.array(np.array(val[1]))
-            print("after"+feature.shape())
+            print("after"+feature.shape)
 
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             good = []
