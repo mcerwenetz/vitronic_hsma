@@ -107,7 +107,9 @@ def main():
 
     ser.reset_input_buffer()
     print("[INFO] waiting for packages")
+
     pc = 0
+    
     pool  = ThreadPool(processes=2)
 
     while(True):
@@ -161,7 +163,8 @@ def main():
                 cl_result = cl_calc.get()
 
                 des_list.append(orb_result)        ##
-                
+                print(f"[INFO] des list len: {len(des_list)}")
+
                 ts_fc_1 = time()
 
                 # features = {"gate":0,"feature_vector":des,"classifictaion":cl_result[0].predicted_classes[0]}
