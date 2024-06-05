@@ -44,8 +44,8 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    np_bytes = BytesIO()
-    featureVecDB = np.save(np_bytes,features,allow_pickle=True)
+    featureVecDB = BytesIO()
+    np.save(featureVecDB,features,allow_pickle=True)
 
     try:
         # Define the INSERT statement with placeholders (%s)
