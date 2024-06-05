@@ -6,7 +6,8 @@ CREATE TABLE parceldump( -- gate PIs dump their results here
 	lastSeenAt TIMESTAMP,
 	expectedNext TIMESTAMP,
 	status INT,
-	features integer[][],
+	--features integer[][],
+	features BYTEA,
 	PRIMARY KEY (id)
 );
 

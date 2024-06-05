@@ -22,7 +22,7 @@ def clearTable(connection, cursor):
     """this method will delete all entries from the database table"""
     try:
         # Define the delete statement to delete all entries
-        delete_query = "DELETE FROM parcel;"
+        delete_query = "DELETE FROM parceldump;"
         # Execute the INSERT statement
         cursor.execute(delete_query)
     except psycopg2.Error as error:
@@ -147,13 +147,13 @@ def testQuery(connection, cursor):
     """this method is for simple try outs"""
     try:
         data = ('id', 'lastseenat')
-        query = "SELECT (%s) , (%s) FROM parceldump;"
-        cursor.execute(query , data)
-        connection.commit()
+        query = "SELECT id , lastseenat FROM parceldump;"
+        print(query , data)
+        cursor.execute(query)# data)
+       # connection.commit()
         erg = cursor.fetchall()
-        print("erg0: " + str(erg[0]))
         for val in erg:
-            print(val)
+            print(f"id: {val[0]}, timestamp: {val[1]}")
     except psycopg2.Error as error:
         print("Error fetching data", error)
 
