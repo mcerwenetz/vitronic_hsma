@@ -112,10 +112,9 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         for val in erg:
             id = val[0]
             feature = np.array(np.array(val[1]))
-            print(type(feature))
+            print(feature)
 
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
-            good = []
             dic[id] = 0
             for m , n in matches:
                 if m.distance < 0.98 * n.distance:
