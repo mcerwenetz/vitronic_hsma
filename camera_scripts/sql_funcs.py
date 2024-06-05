@@ -36,7 +36,7 @@ def clearTable(connection, cursor):
 
 def insertNewParcel(connection, cursor, gate, classification, features:np.ndarray, lenght, height):
     """this method will add a new parcel to the parceldump table"""
-    lenghtDB = length
+    lenghtDB = lenght
     heightDB = height
     lastgateDB = gate
     lastSeenDB = datetime.datetime.now()
@@ -63,7 +63,7 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
 
 def updateParcel(connection, cursor, parcelId ,gate, classification, features:np.ndarray, lenght, height):
     """this method will update an exisitng parcel entry in the parceldump db"""
-    lenghtDB = length
+    lenghtDB = lenght
     heightDB = height
     lastgateDB = gate
     lastSeenDB = datetime.datetime.now()
@@ -107,7 +107,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             good = []
             dic[id] = 0
             for m , n in matches:
-                if m.distance < 0.98 * n.distance #a matching feature vec was found
+                if m.distance < 0.98 * n.distance:
                     dic[id] = dic[id] + 1
         maxValue = max(dic.values())
         maxKey=-1
