@@ -113,6 +113,7 @@ def main():
     pool  = ThreadPool(processes=2)
 
     while(True):
+        print(f"[INFO] PC: {pc}")
 
         if pc == 2:
             bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
@@ -163,7 +164,6 @@ def main():
                 cl_result = cl_calc.get()
 
                 des_list.append(orb_result)        ##
-                print(f"[INFO] des list len: {len(des_list)}")
 
                 ts_fc_1 = time()
 
