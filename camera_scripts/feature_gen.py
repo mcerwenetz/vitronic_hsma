@@ -61,6 +61,7 @@ def orb_func(orb,im,fgmask):
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    cv2.imshow(im)
     kp, des = orb.detectAndCompute(im, None)
     return des
 
