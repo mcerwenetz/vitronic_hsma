@@ -181,6 +181,6 @@ def main():
         # 1.001*n.distance is <",0.98*n.distance,">") 
         if m.distance < 0.98 * n.distance: 
             good.append([m])
-
+    print(len(good))
 if __name__ == "__main__":
     main()
