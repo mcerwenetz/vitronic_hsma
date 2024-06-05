@@ -3,7 +3,7 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
-from sql_funcs import clearTable, addEntry, getEntries, updateTable, printEntry
+from sql_funcs import clearTable, addEntry, getEntries, updateTable, printEntry, testQuery
 
 # Load environment variables from .env file
 load_dotenv()
@@ -82,6 +82,8 @@ def main():
             print("Paket with ID "+ str(id) + " updated")
         elif data == "test":
             test(connection, cursor)
+        elif data == "t":
+            testQuery(connection, cursor)
         else:
             default()
         data = getInput()

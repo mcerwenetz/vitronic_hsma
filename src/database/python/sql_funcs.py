@@ -22,7 +22,7 @@ def clearTable(connection, cursor):
     """this method will delete all entries from the database table"""
     try:
         # Define the delete statement to delete all entries
-        delete_query = "DELETE FROM paket;"
+        delete_query = "DELETE FROM parcel;"
         # Execute the INSERT statement
         cursor.execute(delete_query)
     except psycopg2.Error as error:
@@ -73,7 +73,7 @@ def printEntry(entry):
 def updateTable(connection, cursor, paketId):
     try:
         # Define the UPDATE statement with placeholders (%s)
-        getpaket_query = "SELECT * FROM paket WHERE id = (%s)"
+        getpaket_query = "SELECT * FROM parcel WHERE id = (%s)"
         # Sample data to be inserted
         paket = (paketId,)
         # Execute the UPDATE statement
@@ -92,7 +92,7 @@ def updateTable(connection, cursor, paketId):
         user_data = (gate, lastSeen, expectedNextGate, status, paketId)
         
         #create update query
-        update_query = "UPDATE paket SET lastgate=(%s), lastseenat=(%s), expectedNext=(%s), status=(%s) WHERE id = (%s);"
+        update_query = "UPDATE parcel SET lastgate=(%s), lastseenat=(%s), expectedNext=(%s), status=(%s) WHERE id = (%s);"
         # Execute the UPDATE statement
         cursor.execute(update_query, user_data)
         # Commit the transaction
@@ -106,7 +106,7 @@ def updateTable(connection, cursor, paketId):
 def getEntries(curs):
     """this method will get all entries from the database"""
     try:
-        get_query = "SELECT * FROM paket;"
+        get_query = "SELECT * FROM parcel;"
         curs.execute(get_query)
         return curs.fetchall()
     except psycopg2.Error as error:
@@ -117,7 +117,7 @@ def getAllLates(cursor):
     """this method will return a list of all database enries, where the expectedNext datetime has already passed"""
     try:
         now = datetime.datetime.now()
-        get_query = "SELECT * FROM paket WHERE expectednext < (%s);"
+        get_query = "SELECT * FROM parcel WHERE expectednext < (%s);"
         timestamp = (now,)
         # Execute the GET statement
         cursor.execute(get_query, timestamp)
@@ -132,7 +132,7 @@ def markLost(connection, cursor, paketId, paketstatus):
     try:
         user_data = (paketstatus, paketId)
         #create update query
-        update_query = "UPDATE paket SET status=(%s) WHERE id = (%s);"
+        update_query = "UPDATE parcel SET status=(%s) WHERE id = (%s);"
         # Execute the UPDATE statement
         cursor.execute(update_query, user_data)
         # Commit the transaction
@@ -142,3 +142,19 @@ def markLost(connection, cursor, paketId, paketstatus):
         # Handle any error that may occur during the Update operation
         print("Error inserting data:", error)
     return 
+
+def testQuery(connection, cursor):
+    """this method is for simple try outs"""
+    try:
+        data = ('id', 'lastseenat')
+        query = "SELECT (%s) , (%s) FROM parceldump;"
+        cursor.execute(query , data)
+        connection.commit()
+        erg = cursor.fetchall()
+        print("erg0: " + str(erg[0]))
+        for val in erg:
+            print(val)
+    except psycopg2.Error as error:
+        print("Error fetching data", error)
+
+    return
