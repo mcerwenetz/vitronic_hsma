@@ -63,7 +63,7 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
         print("Error inserting data:", error)
     return
 
-def updateParcel(connection, cursor, parcelId ,gate, classification, features:np.ndarray, lenght, height):
+def updateParcel(connection, cursor, parcelId ,gate, classification, features, lenght, height):
     """this method will update an exisitng parcel entry in the parceldump db"""
     lenghtDB = lenght
     heightDB = height
@@ -78,7 +78,7 @@ def updateParcel(connection, cursor, parcelId ,gate, classification, features:np
         update_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
         update_query = "UPDATE parceldump SET lenght=(%s), height=(%s), lastgate=(%s),lastseenat=(%s), expectednext=(%s), status=(%s) WHERE id = (%s);"
         # Sample data to be inserted
-        user_data = (lenghtDB , heightDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, parcelId) #change feature vec to new feautreVEc or keep old feature vec?
+        user_data = (lenghtDB , heightDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, parcelId[0]) #change feature vec to new feautreVEc or keep old feature vec?
 
         # Execute the INSERT statement
         cursor.execute(update_query, user_data)
