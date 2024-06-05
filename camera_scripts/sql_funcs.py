@@ -33,7 +33,7 @@ def clearTable(connection, cursor):
 
     return
 
-def addEntry(connection, cursor, gate, classification, features:numpy.ndarray, length = 1, height = 1): # classification: 1 good 2 bad
+def addEntry(connection, cursor, gate, classification, features:np.ndarray, length = 1, height = 1): # classification: 1 good 2 bad
     """this method will add a new parcel to the parceldump table"""
     lenghtDB = length
     heightDB = height
@@ -47,7 +47,7 @@ def addEntry(connection, cursor, gate, classification, features:numpy.ndarray, l
         insert_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
 
         # Sample data to be inserted
-        user_data = (lenghtDB , heigthDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, featureVecDB)
+        user_data = (lenghtDB , heightDB, lastgateDB , lastSeenDB, expectedNextGateDB, statusDB, featureVecDB)
 
         # Execute the INSERT statement
         cursor.execute(insert_query, user_data)
