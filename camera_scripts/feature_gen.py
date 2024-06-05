@@ -80,7 +80,7 @@ def main():
     camera.configure(camera.create_preview_configuration(
         main={"format": 'XRGB8888', "size": (3780, 2464)}))
     # Exposure time. 100 = 1 ms
-    camera.set_controls({"ExposureTime":100})
+    camera.set_controls({"ExposureTime":5000})
     camera.start()
     print("[INFO] finished camera setup")
     
