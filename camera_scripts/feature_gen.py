@@ -58,10 +58,14 @@ def cl_model_func(model,im):
 
 
 def orb_func(orb,im,fgmask):
+
+
     im = np.array(im)
+    cv2.imwrite("orb_1.jpg",im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
+    cv2.imwrite("orb_2.jpg",im)
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite("orb.jpg",im)
+    cv2.imwrite("orb_3.jpg",im)
     kp, des = orb.detectAndCompute(im, None)
     return des
 
