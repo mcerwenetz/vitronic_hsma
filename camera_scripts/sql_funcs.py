@@ -124,6 +124,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
                 if m.distance < 0.98 * n.distance:
                     dic[id] = dic[id] + 1
         maxValue = max(dic.values())
+        print(maxValue)
         maxKey=-1
         maxKey = [i for i in dic.keys() if dic[i] == maxValue ]
         print("Max key: " + str(maxKey))     
