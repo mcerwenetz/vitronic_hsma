@@ -110,6 +110,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         
         dic = dict()
         for val in erg:
+            bf = cv2.BFMatcher()
             id = val[0]
             feature = np.frombuffer(val[1],dtype=np.int8)
             feature.reshape(500,32)
