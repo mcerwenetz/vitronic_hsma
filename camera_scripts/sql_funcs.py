@@ -98,6 +98,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         query = "SELECT id, features FROM parceldump;"
         cursor.execute(query)
         erg = cursor.fetchall()
+        print(erg)
         parcelIdFound = -1 #id of the parcel with the matching feature vec     
         
         if len(erg) == 0:
@@ -108,7 +109,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         dic = dict()
         for val in erg:
             id = val[0]
-            feature = np.ndarray(val[1])
+            feature = np.array(val[1])
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             good = []
             dic[id] = 0
