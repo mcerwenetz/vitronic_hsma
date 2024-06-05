@@ -42,6 +42,9 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
     featureVecDB = features.tolist()
+
+    #get all feature vectors and id -> feat vec vergleichen -> wenns übereinstimmt updaten! sont neuer Eintrag
+
     try:
         # Define the INSERT statement with placeholders (%s)
         insert_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
