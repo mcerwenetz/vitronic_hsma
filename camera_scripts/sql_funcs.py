@@ -1,9 +1,10 @@
+import PIL.Image
 import psycopg2
 import random
 import datetime
 import numpy as np
 import cv2
-
+import PIL
 #status of different packages
 # STATI[0] - OK | STATI[1] - DEFECTIVE | STATI[3] - CHINA | STATI[4] - LOST
 STATI = [1,2,4,8]
@@ -111,10 +112,10 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
             print(id)
 
             feature = np.array(val[1])
-            img = cv2.imread(val[1])
+            img = PIL.Image.fromarray(val[1])
             print(feature)
 
-            matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
+            matches = bf.knnMatch(features, img, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             good = []
             dic[id] = 0
             for m , n in matches:
