@@ -175,6 +175,7 @@ def main():
                     break
     bf = cv2.BFMatcher()
     matches = bf.knnMatch(des_list[0], des_list[1],k=2)
+    print(type(des_list[0]))
     good = []
     for m, n in matches: 
         # print("m.distance is <",m.distance,">  
