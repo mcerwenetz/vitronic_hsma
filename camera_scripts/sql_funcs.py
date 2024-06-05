@@ -43,7 +43,7 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    featureVecDB = features.flatten()
+    featureVecDB = features.tolist()
     try:
         # Define the INSERT statement with placeholders (%s)
         insert_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
@@ -70,7 +70,7 @@ def updateParcel(connection, cursor, parcelId ,gate, classification, features:np
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    featureVecDB = features.flatten()
+    featureVecDB = features.tolist()
     try:
         # Define the INSERT statement with placeholders (%s)
         update_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
@@ -109,9 +109,7 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, leng
         dic = dict()
         for val in erg:
             id = val[0]
-            print(type(features))
-            print(type(val[1]))
-            feature = val[1]
+            feature = np.array(val[1])
 
             matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
             good = []
