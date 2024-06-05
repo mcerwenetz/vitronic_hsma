@@ -64,7 +64,7 @@ def orb_func(orb,im,fgmask):
     kp, des = orb.detectAndCompute(im, None)
     return des
 
-
+des_list = [] ##
 
 def main():
     #os.system('export ROBOFLOW_API_KEY="5BBeWc9fVb0WznH4RnJn"')
@@ -111,6 +111,18 @@ def main():
     pool  = ThreadPool(processes=2)
 
     while(True):
+
+        if pc == 2:
+            bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+            ts_match_0 = time()
+            matches = bf.match(des_list[0], des_list[1])
+            ts_match_1 = time()
+            print(f"[INFO] Matches: {matches}")
+            print(f"[INFO] time: {ts_match_1-ts_match_0}")
+
+
+
+
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
             
@@ -147,10 +159,9 @@ def main():
 
                 orb_result = orb_calc.get()
                 cl_result = cl_calc.get()
-                
-                print(type(orb_result))
-                print(orb_result)
 
+                des_list.append(orb_result)        ##
+                
                 ts_fc_1 = time()
 
                 # features = {"gate":0,"feature_vector":des,"classifictaion":cl_result[0].predicted_classes[0]}
@@ -170,7 +181,6 @@ def main():
                 #sql_funcs.addEntry(connection,db_cursor,0,status)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
-
 
 if __name__ == "__main__":
     main()
