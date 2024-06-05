@@ -91,7 +91,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create()
+    orb = cv2.ORB.create(100)
     
 
     if sys.argv[1]:
@@ -113,17 +113,6 @@ def main():
     pool  = ThreadPool(processes=2)
 
     while(True):
-
-        if pc == 2:
-            bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-            ts_match_0 = time()
-            matches = bf.match(des_list[0], des_list[1])
-            ts_match_1 = time()
-            print(f"[INFO] Matches: {matches}")
-            print(f"[INFO] time: {ts_match_1-ts_match_0}")
-
-
-
 
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').rstrip()
@@ -163,7 +152,6 @@ def main():
                 cl_result = cl_calc.get()
 
                 des_list.append(orb_result)        ##
-                print(f"[INFO] des list len: {len(des_list)}")
 
                 ts_fc_1 = time()
 
@@ -184,6 +172,22 @@ def main():
                 #sql_funcs.addEntry(connection,db_cursor,0,status)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
+                if pc == 2:
+                    break
+                
+    bf = cv2.BFMatcher()
+    ts_match_0 = time()
+    matches = bf.knnMatch(des_list[0], des_list[1],k=2)
+    ts_match_1 = time()
+    good = []
+    for m, n in matches: 
+        # print("m.distance is <",m.distance,">  
+        # 1.001*n.distance is <",0.98*n.distance,">") 
+        if m.distance < 0.98 * n.distance: 
+            good.append([m]) 
+    
+    print(f"[INFO] Matches: {len(good)}")
+    print(f"[INFO] time: {ts_match_1-ts_match_0}")
 
 if __name__ == "__main__":
     main()
