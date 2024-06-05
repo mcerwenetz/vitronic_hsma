@@ -175,7 +175,7 @@ def main():
                 if pc == 2:
                     break
                 
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    bf = cv2.BFMatcher()
     ts_match_0 = time()
     matches = bf.knnMatch(des_list[0], des_list[1],k=2)
     ts_match_1 = time()
