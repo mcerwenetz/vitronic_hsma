@@ -68,11 +68,10 @@ def disc_func(disk : KF.DISK,im,fgmask) -> KF.DISKFeatures:
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     cv2.imwrite("orb_3.jpg",im)
-    im = transform.resize(im, (600,800), interpolation="bilinear")
     preprocessed_image = np.moveaxis(im, -1, 0)
     preprocessed_image = np.expand_dims(preprocessed_image, axis=0)
     preprocessed_image= (preprocessed_image / 255.).astype(np.float32)
-    with torch.inference_mode:
+    with torch.inference_mode():
         features = disk(torch.from_numpy(preprocessed_image), pad_if_not_divisible=True)
     return features
 
@@ -86,8 +85,10 @@ def main():
 
     print("[INFO] starting camera setup")
     camera = picamera2.Picamera2()
+    #camera.configure(camera.create_preview_configuration(
+     #   main={"format": 'XRGB8888', "size": (3780, 2464)}))
     camera.configure(camera.create_preview_configuration(
-        main={"format": 'XRGB8888', "size": (3780, 2464)}))
+        main={"format": 'XRGB8888', "size": (800, 600)}))
     # Exposure time. 100 = 1 ms
     camera.set_controls({"ExposureTime":5000})
     camera.start()
