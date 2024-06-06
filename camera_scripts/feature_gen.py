@@ -11,6 +11,8 @@ import psycopg2
 import sql_funcs
 import kornia as K
 import kornia.feature as KF
+import torch
+
 
 from multiprocessing.pool import ThreadPool
 
@@ -64,7 +66,10 @@ def disc_func(disk : KF.DISK,im,fgmask) -> KF.DISKFeatures:
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     cv2.imwrite("orb_3.jpg",im)
-    features = disk(im, pad_if_not_divisible=True)
+    preprocessed_image = np.moveaxis(im, -1, 0)
+    preprocessed_image = np.expand_dims(preprocessed_image, axis=0)
+    preprocessed_image= (preprocessed_image / 255.).astype(np.float32)
+    features = disk(torch.from_numpy(preprocessed_image), pad_if_not_divisible=True)
     return features
 
 
