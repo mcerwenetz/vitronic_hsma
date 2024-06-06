@@ -128,11 +128,11 @@ def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, 
                 id_of_best_pakage = id_from_db
             
 
-        print(f"best similarity is {similarity}, id is {id_of_best_pakage}")
+        print(f"best similarity is {best_similarity}, id is {id_of_best_pakage}")
         
         # this is for debugging purposes to get into gate-mode if the pakage does not fit into any
         # already inserted pakages
-        if (similarity < 0.0117):
+        if (best_similarity < 0.0117):
             print("new pakage detected")
             insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
 
