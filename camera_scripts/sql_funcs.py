@@ -133,6 +133,7 @@ def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, 
         # this is for debugging purposes to get into gate-mode if the pakage does not fit into any
         # already inserted pakages
         if (similarity < 0.0117):
+            print("new pakage detected")
             insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
 
 
