@@ -133,8 +133,8 @@ def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, 
         # this is for debugging purposes to get into gate-mode if the pakage does not fit into any
         # already inserted pakages
         # if (best_similarity < 0.0001):
-            # print("new pakage detected")
-        insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
+        #     print("new pakage detected")
+        # insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
 
 
         # if maxValue  < 90:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
