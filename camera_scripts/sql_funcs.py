@@ -92,7 +92,7 @@ def updateParcel(connection, cursor, parcelId ,gate, classification, features, l
     return
 
 
-def addEntry(connection, cursor, gate, classification, features:np.ndarray, shape, length = 1, height = 1): # classification: 1 good 2 bad
+def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, shape, length = 1, height = 1): # classification: 1 good 2 bad
     """this method will find an existing db entry according to the feature vec. If no matching vector is found, a new entry is added"""
     #get all feature vectors and id -> feat vec vergleichen -> wenns übereinstimmt updaten! sont neuer Eintrag
     bf = cv2.BFMatcher()
@@ -100,41 +100,29 @@ def addEntry(connection, cursor, gate, classification, features:np.ndarray, shap
         #get all ids and  featureVecs
         query = "SELECT id, features FROM parceldump;"
         cursor.execute(query)
-        erg = cursor.fetchall()
+        id_feature_pairs = cursor.fetchall()
         parcelIdFound = -1 #id of the parcel with the matching feature vec     
         
-        if len(erg) == 0:
-            insertNewParcel(connection, cursor, gate, classification, features, length, height)
+        if len(id_feature_pairs) == 0:
+            insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
             return
 
-        
-        dic = dict()
-        for val in erg:
+        for id_feature_pair in id_feature_pairs:
+            feature_from_db = id_feature_pair[1]
             bf = cv2.BFMatcher()
-            id = val[0]
-            feature = np.frombuffer(val[1],dtype=np.uint8)
-            feature = feature.reshape(shape[0],shape[1])
+            feature_from_db = np.frombuffer(feature_from_db,dtype=np.uint8)
+            feature_from_db = feature_from_db.reshape(shape[0],shape[1])
 
-            # print(features.shape)
-            # print(feature.shape)
+            matches = bf.match(feature_from_db, gate_feature)
+            print(matches)
+            print(dir(matches))
 
-            matches = bf.knnMatch(features, feature, k=2) #features is the new classified image feature vector and feature is the feature vec of an old db entry
-            dic[id] = 0
-            for m , n in matches:
-                if m.distance < 0.99 * n.distance:
-                    dic[id] = dic[id] + 1
-        maxValue = max(dic.values())
-        print(maxValue)
-        maxKey=-1
-        maxKey = [i for i in dic.keys() if dic[i] == maxValue ]
-        print("Max key: " + str(maxKey))     
-        
-        if maxValue  < 90:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
-            insertNewParcel(connection, cursor, gate, classification, features, length, height)
-            maxKey = 0
-        else: # update the parcel entry with the found parcelId
-            updateParcel(connection, cursor, maxKey, gate, classification, features, length, height)
-            maxKey = 0
+        # if maxValue  < 90:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
+        #     insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
+        #     maxKey = 0
+        # else: # update the parcel entry with the found parcelId
+        #     updateParcel(connection, cursor, maxKey, gate, classification, gate_feature, length, height)
+        #     maxKey = 0
 
     except psycopg2.Error as error:
         # Handle any error that may occur during the INSERT operation
