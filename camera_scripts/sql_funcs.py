@@ -116,10 +116,11 @@ def addEntry(connection, cursor, gate, classification, gate_feature:KF.DISKFeatu
             id = id_feature_pair[0]
             disc_feature = id_feature_pair[1]
             disc_feature = pickle.loads(disc_feature)
-            lafs_gate = KF.laf_from_center_scale_ori(gate_feature.keypoints[None], torch.ones(1, len(gate_feature.keypoints), 1, 1, device=device))
-            lafs_db=KF.laf_from_center_scale_ori(disc_feature.keypoints[None], torch.ones(1, len(disc_feature.keypoints), 1, 1, device=device))
-            _, idxs = lg_matcher(gate_feature.descriptors, disc_feature.descriptors, lafs_gate, lafs_db)
-            current_similarity = idxs.shape[0]
+            with torch.inference_mode:
+                lafs_gate = KF.laf_from_center_scale_ori(gate_feature.keypoints[None], torch.ones(1, len(gate_feature.keypoints), 1, 1, device=device))
+                lafs_db=KF.laf_from_center_scale_ori(disc_feature.keypoints[None], torch.ones(1, len(disc_feature.keypoints), 1, 1, device=device))
+                _, idxs = lg_matcher(gate_feature.descriptors, disc_feature.descriptors, lafs_gate, lafs_db)
+                current_similarity = idxs.shape[0]
             if current_similarity > best_similarity:
                 best_similarity = current_similarity
                 id_of_best_pakage = id

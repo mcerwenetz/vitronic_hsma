@@ -69,7 +69,8 @@ def disc_func(disk : KF.DISK,im,fgmask) -> KF.DISKFeatures:
     preprocessed_image = np.moveaxis(im, -1, 0)
     preprocessed_image = np.expand_dims(preprocessed_image, axis=0)
     preprocessed_image= (preprocessed_image / 255.).astype(np.float32)
-    features = disk(torch.from_numpy(preprocessed_image), pad_if_not_divisible=True)
+    with torch.inference_mode:
+        features = disk(torch.from_numpy(preprocessed_image), pad_if_not_divisible=True)
     return features
 
 
