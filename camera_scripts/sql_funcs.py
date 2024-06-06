@@ -6,6 +6,12 @@ import numpy as np
 import cv2
 import PIL
 from io import BytesIO
+
+import kornia as K
+import kornia.feature as KF
+import kornia.geometry.transform as transform
+import torch
+import pickle
 #status of different packages
 # STATI[0] - OK | STATI[1] - DEFECTIVE | STATI[3] - CHINA | STATI[4] - LOST
 STATI = [1,2,4,8]
@@ -36,7 +42,7 @@ def clearTable(connection, cursor):
 
     return
 
-def insertNewParcel(connection, cursor, gate, classification, features:np.ndarray, lenght, height):
+def insertNewParcel(connection, cursor, gate, classification, features, lenght, height):
     """this method will add a new parcel to the parceldump table"""
     lenghtDB = lenght
     heightDB = height
@@ -44,7 +50,7 @@ def insertNewParcel(connection, cursor, gate, classification, features:np.ndarra
     lastSeenDB = datetime.datetime.now()
     expectedNextGateDB = datetime.datetime.now() + datetime.timedelta(seconds=SECONDS)
     statusDB = classification # 1: ok | 2: defekt
-    featureVecDB = features.tobytes()
+    featureVecDB = bytes(features)
     try:
         # Define the INSERT statement with placeholders (%s)
         insert_query = "INSERT INTO parceldump(lenght , height , lastgate , lastseenat , expectednext , status, features) VALUES (%s, %s, %s, %s, %s, %s, %s);"
@@ -92,41 +98,31 @@ def updateParcel(connection, cursor, parcelId ,gate, classification, features, l
     return
 
 
-def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, shape, length = 1, height = 1): # classification: 1 good 2 bad
+def addEntry(connection, cursor, gate, classification, gate_feature:KF.DISKFeatures, device, lg_matcher : KF.LightGlueMatcher, length = 1, height = 1): # classification: 1 good 2 bad
     """this method will find an existing db entry according to the feature vec. If no matching vector is found, a new entry is added"""
     #get all feature vectors and id -> feat vec vergleichen -> wenns übereinstimmt updaten! sont neuer Eintrag
-    bf = cv2.BFMatcher()
+    
     try:
-        #get all ids and  featureVecs
+        # get all ids and  featureVecs
         query = "SELECT id, features FROM parceldump;"
         cursor.execute(query)
         id_feature_pairs = cursor.fetchall()
-        parcelIdFound = -1 #id of the parcel with the matching feature vec     
         
-        if len(id_feature_pairs) == 0:
-            insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
-            return
-
         best_similarity=0
         id_of_best_pakage = 0
 
-        for id_feature_pair in id_feature_pairs:
-            id_from_db=id_feature_pair[0]
-            feature_from_db = id_feature_pair[1]
-            bf = cv2.BFMatcher(cv2.NORM_HAMMING)
-            feature_from_db = np.frombuffer(feature_from_db,dtype=np.uint8)
-            feature_from_db = feature_from_db.reshape(shape[0],shape[1])
 
-            matches = bf.match(feature_from_db, gate_feature)
-            distances = [m.distance for m in matches]
-            # Distance between search and index images
-            distance = sum(distances) / len(distances)
-            # If distance == 0 -> similarity = 1
-            similarity = 1 / (1 + distance)
-            if similarity > best_similarity:
-                best_similarity = similarity
-                id_of_best_pakage = id_from_db
-            
+        for id_feature_pair in id_feature_pairs:
+            id = id_feature_pair[0]
+            disc_feature = id_feature_pair[1]
+            disc_feature = pickle.loads(disc_feature)
+            lafs_gate = KF.laf_from_center_scale_ori(gate_feature.keypoints[None], torch.ones(1, len(gate_feature.keypoints), 1, 1, device=device))
+            lafs_db=KF.laf_from_center_scale_ori(disc_feature.keypoints[None], torch.ones(1, len(disc_feature.keypoints), 1, 1, device=device))
+            _, idxs = lg_matcher(gate_feature.descriptors, disc_feature.descriptors, lafs_gate, lafs_db)
+            current_similarity = idxs.shape[0]
+            if current_similarity > best_similarity:
+                best_similarity = current_similarity
+                id_of_best_pakage = id
 
         print(f"best similarity is {best_similarity}, id is {id_of_best_pakage}")
         
@@ -134,7 +130,8 @@ def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, 
         # already inserted pakages
         # if (best_similarity < 0.0001):
         #     print("new pakage detected")
-        # insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
+        disc_features = pickle.dumps(gate_feature)
+        insertNewParcel(connection, cursor, gate, classification, disc_features, length, height)
 
 
         # if maxValue  < 90:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector

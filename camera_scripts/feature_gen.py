@@ -9,6 +9,9 @@ import inference
 import serial
 import psycopg2
 import sql_funcs
+import kornia as K
+import kornia.feature as KF
+
 from multiprocessing.pool import ThreadPool
 
 MAX_ACTIVITY_RATION_THRESHOLD = 0.4
@@ -57,15 +60,12 @@ def cl_model_func(model,im):
     return result[0].predicted_classes[0]
 
 
-def orb_func(orb,im,fgmask):
-
-
+def disc_func(disk : KF.DISK,im,fgmask) -> KF.DISKFeatures:
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     cv2.imwrite("orb_3.jpg",im)
-    kp, des = orb.detectAndCompute(im, None)
-    return des
+    features = disk(im, pad_if_not_divisible=True)
+    return features
 
 
 
@@ -93,8 +93,11 @@ def main():
     background_subtractor = cv2.bgsegm.createBackgroundSubtractorCNT()
     max_activity = learn_mask(background_subtractor, camera)
 
-    print("[INFO] setting up orb")
-    orb = cv2.ORB.create(100)
+    print("[INFO] setting up lgmatcher")
+    device = K.utils.get_cuda_or_mps_device_if_available()
+    lg_matcher = KF.LightGlueMatcher("disk").eval().to(device)
+    num_features = 2048
+    disk = KF.DISK.from_pretrained("depth").to(device)
     
 
     if sys.argv[1]:
@@ -147,13 +150,13 @@ def main():
 
                 pool  = ThreadPool(processes=2)
 
-                orb_calc = pool.apply_async(orb_func,args=(orb,img_list[used_image],fgmask))
+                orb_calc = pool.apply_async(disc_func,args=(disk,img_list[used_image],fgmask))
                 cl_calc = pool.apply_async(cl_model_func, args=(model,img_list[used_image]))
 
-                orb_result = orb_calc.get()
+                disc_features = orb_calc.get()
                 cl_result = cl_calc.get()
                 
-                des_list.append(orb_result)
+                des_list.append(disc_features)
 
                 ts_fc_1 = time()
 
@@ -168,10 +171,10 @@ def main():
                 print()
                 print(f"[INFO] Gate: 0")
                 print(f"[INFO] Classification: {cl_result}")
-                print(f"[INFO] Feature Vector: {orb_result}")
+                print(f"[INFO] Feature Vector: {disc_features}")
                 print()
                 print(f"[INFO] classification and feature detection took {ts_fc_1-ts_fc_0} s")
-                sql_funcs.addEntry(connection,db_cursor,pc,status,orb_result,orb_result.shape)
+                sql_funcs.addEntry(connection,db_cursor,pc,status,disc_features, device, lg_matcher,disc_features.shape)
                 print("[INFO] database query was send")
                 print(f"[INFO] total time  {ts_fc_1-total_time_0} s")
 
