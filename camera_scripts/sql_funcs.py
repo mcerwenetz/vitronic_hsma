@@ -107,15 +107,29 @@ def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, 
             insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
             return
 
+        best_similarity=0
+        id_of_best_pakage = 0
+
         for id_feature_pair in id_feature_pairs:
+            id_from_db=id_feature_pair[0]
             feature_from_db = id_feature_pair[1]
-            bf = cv2.BFMatcher()
+            bf = cv2.BFMatcher(cv2.NORM_HAMMING)
             feature_from_db = np.frombuffer(feature_from_db,dtype=np.uint8)
             feature_from_db = feature_from_db.reshape(shape[0],shape[1])
 
             matches = bf.match(feature_from_db, gate_feature)
-            print(matches)
-            print(dir(matches))
+            distances = [m.distance for m in matches]
+            # Distance between search and index images
+            distance = sum(distances) / len(distances)
+            # If distance == 0 -> similarity = 1
+            similarity = 1 / (1 + distance)
+            if similarity > best_similarity:
+                best_similarity = similarity
+                id_of_best_pakage = id_from_db
+            
+
+        print(f"best similarity is {similarity}, id is {id_of_best_pakage}")
+            
 
         # if maxValue  < 90:  #if parcelId is -1, then no parcel was found that matches an exisitng feature vector
         #     insertNewParcel(connection, cursor, gate, classification, gate_feature, length, height)
