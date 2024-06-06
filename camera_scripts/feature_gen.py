@@ -12,6 +12,8 @@ import sql_funcs
 import kornia as K
 import kornia.feature as KF
 import torch
+import kornia.geometry.transform as transform
+
 
 
 from multiprocessing.pool import ThreadPool
@@ -66,6 +68,7 @@ def disc_func(disk : KF.DISK,im,fgmask) -> KF.DISKFeatures:
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
     cv2.imwrite("orb_3.jpg",im)
+    im = transform.resize(im, (600,800), interpolation="bilinear")
     preprocessed_image = np.moveaxis(im, -1, 0)
     preprocessed_image = np.expand_dims(preprocessed_image, axis=0)
     preprocessed_image= (preprocessed_image / 255.).astype(np.float32)
