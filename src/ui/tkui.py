@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import datetime 
 import os
 import dotenv
 import psycopg2
@@ -13,24 +12,28 @@ import psycopg2
 # DATABASE_USER = os.getenv('DATABASE_USER')
 # DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
 # DATABASE = os.getenv('DATABASE')
-DELAY = 500#millis
+DATABASE_HOST = "172.19.143.117"
+DATABASE_PORT = 5432
+DATABASE_USER = "vitronic"
+DATABASE_PASSWORD = "vitronicpasswd"
+DATABASE = "vitronicdb"
+DELAY = 250#millis
 
-#conn = psycopg2.connect(host=DATABASE_HOST, database=DATABASE, user=DATABASE_USER, password=DATABASE_PASSWORD, port=DATABASE_PORT )
-
+conn = psycopg2.connect(host=DATABASE_HOST, database=DATABASE, user=DATABASE_USER, password=DATABASE_PASSWORD, port=DATABASE_PORT)
 def fetch_data():
     """Fetches data from the database and returns it."""
-    
-    # cursor = conn.cursor()
-    # cursor.execute('SELECT * FROM parceldump')
-    # rows = cursor.fetchall()
-    # cursor.close()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM parceldump')
+    rows = cursor.fetchall()
+    cursor.close()
     # conn.close()
-    now = datetime.datetime.now()
-    next= datetime.datetime.now()
-    dbentry = [0,17,42,0,now,next,1] #id, len, height, gate, ts1, ts2, status, (features)
-    dbentry2 = [1,42,17,0,now,next,2]
-    rows = [dbentry,dbentry2]
+    #now = datetime.datetime.now()
+    #next= datetime.datetime.now()
+    #dbentry = [0,17,42,0,now,next,1] #id, len, height, gate, ts1, ts2, status, (features)
+    #dbentry2 = [1,42,17,0,now,next,2]
+    #rows = [dbentry,dbentry2]
     for row in rows:
+        row=list(row)
         row[6] = bin(row[6])[2:].zfill(4)
     return rows
 
