@@ -14,13 +14,13 @@ import cv2
 import os
 import datetime
 import time
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 LEARNING_RATE= 1e-4
 EPOCHS = 10
-BATCH_SIZE = 32
-DENSE_1 = 128
-DENSE_2 = 64
-DENSE_3 = 32
+BATCH_SIZE = 16
+DENSE_1 = 16
+DENSE_2 = 8
+DENSE_3 = 6
 DENSE_4 = 4
 
 def get_data(rows,path):
@@ -56,9 +56,9 @@ def get_data(rows,path):
     	
     return data,targets,filenames
 
-TEST_PATH = "/home/ela/Desktop/vitronic/parcel_dataset_augm/test/"
-VALID_PATH = "/home/ela/Desktop/vitronic/parcel_dataset_augm/valid/"
-TRAIN_PATH = "/home/ela/Desktop/vitronic/parcel_dataset_augm/train/"
+TEST_PATH = "/home/ela/Desktop/vitronic/makeathon-vitronic/models/parcel_dataset_augm/test/"
+VALID_PATH = "/home/ela/Desktop/vitronic/makeathon-vitronic/models/parcel_dataset_augm/valid/"
+TRAIN_PATH = "/home/ela/Desktop/vitronic/makeathon-vitronic/models/parcel_dataset_augm/train/"
 
 print("[INFO] loading dataset...")
 rows_test = open(TEST_PATH+"_annotations.csv").read().strip().split("\n")
@@ -106,7 +106,7 @@ H = model.fit(
 print("[INFO] saving object detector model...")
 ts = time.time()
 model_name = "model"+datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-model.save("/home/ela/Desktop/vitronic/parcel_dataset_augm/"+model_name)
+model.save("/home/ela/Desktop/vitronic/"+model_name)
 # plot the model training history
 N = len(H.history["loss"])
 plt.style.use("ggplot")
