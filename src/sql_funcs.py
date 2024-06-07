@@ -115,7 +115,7 @@ def addEntry(connection, cursor, gate, classification, gate_feature:np.ndarray, 
             feature_from_db = id_feature_pair[1]
             bf = cv2.BFMatcher(cv2.NORM_HAMMING)
             feature_from_db = np.frombuffer(feature_from_db,dtype=np.uint8)
-            feature_from_db = feature_from_db.reshape(shape[0],shape[1])
+            feature_from_db = feature_from_db.reshape(500,32)
 
             matches = bf.match(feature_from_db, gate_feature)
             distances = [m.distance for m in matches]

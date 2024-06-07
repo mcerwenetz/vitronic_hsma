@@ -13,12 +13,3 @@ def send_image(image_path, server_ip, server_port):
     client_socket.sendall(image_length_bytes + image_data)
     client_socket.close()
 
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 4:
-        print("Usage: python send_image.py <image_path> <server_ip> <server_port>")
-    else:
-        image_path = sys.argv[1]
-        server_ip = sys.argv[2]
-        server_port = int(sys.argv[3])
-        send_image(image_path, server_ip, server_port)
