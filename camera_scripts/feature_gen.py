@@ -12,7 +12,7 @@ import sql_funcs
 from multiprocessing.pool import ThreadPool
 
 MAX_ACTIVITY_RATION_THRESHOLD = 0.4
-LEARN_ITERATIONS=20
+LEARN_ITERATIONS=200
 
 ser = serial.Serial('/dev/ttyACM0', 115200, timeout = 1)
 
@@ -62,7 +62,7 @@ def orb_func(orb,im,fgmask):
 
     im = np.array(im)
     im = cv2.bitwise_and(im,im, mask=fgmask)
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    # im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     cv2.imwrite("orb_3.jpg",im)
     kp, des = orb.detectAndCompute(im, None)
     return des
@@ -70,23 +70,24 @@ def orb_func(orb,im,fgmask):
 
 
 def main():
+    expt = input("Enter Exposure Time (100 = 1ms)")
+    orb_feats = input("Enter Features (>=100)")
+
+
     #os.system('export ROBOFLOW_API_KEY="5BBeWc9fVb0WznH4RnJn"')
     print("[INFO] starting database setup")
     connection, db_cursor = setup_db()
-    print("[INFO] finished database setup")
 
     print("[INFO] starting camera setup")
     camera = picamera2.Picamera2()
     camera.configure(camera.create_preview_configuration(
-        main={"format": 'XRGB8888', "size": (3780, 2464)}))
+        main={"format": 'YUV420', "size": (3780, 2464)}))
     # Exposure time. 100 = 1 ms
-    camera.set_controls({"ExposureTime":5000})
+    camera.set_controls({"ExposureTime":500})
     camera.start()
-    print("[INFO] finished camera setup")
     
     print("[INFO] starting model setup")
     model = inference.get_model("classification-ofjuw/3")
-    print("[INFO] finished model setup")
 
 
     print("[INFO] learning mask")
@@ -94,7 +95,7 @@ def main():
     max_activity = learn_mask(background_subtractor, camera)
 
     print("[INFO] setting up orb")
-    orb = cv2.ORB.create(100)
+    orb = cv2.ORB.create(orb_feats)
     
 
     if sys.argv[1]:
@@ -138,8 +139,8 @@ def main():
             else:
                 status = 1
                 vals = line.split(" ")
-                print(f"[INFO] interrupt time {vals[0]} ms")
-                print(f"[INFO] taking pictures took: {(ts)} s")
+                # print(f"[INFO] interrupt time {vals[0]} ms")
+                # print(f"[INFO] taking pictures took: {(ts)} s")
                 
                 ts_fc_0 = time()
 
