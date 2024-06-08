@@ -5,9 +5,7 @@ import picamera2
 from time import sleep, time
 import matplotlib.pyplot as plt
 import sys
-import inference
 import serial
-import psycopg2
 import sql_funcs
 from multiprocessing.pool import ThreadPool
 import socket
@@ -15,7 +13,7 @@ import socket
 MAX_ACTIVITY_RATION_THRESHOLD = 0.4
 LEARN_ITERATIONS=200
 GATE=0
-IP="0.0.0.0"
+IP="172.19.143.117"
 PORT="8080"
 USED_IMAGE=5
 orb_feats = 500
@@ -93,8 +91,6 @@ def main():
     #client_socket.connect((IP,PORT))
 
     #os.system('export ROBOFLOW_API_KEY="5BBeWc9fVb0WznH4RnJn"')
-    print("[INFO] starting database setup")
-    connection, db_cursor = setup_db()
 
     print("[INFO] starting camera setup")
     camera = picamera2.Picamera2()
@@ -104,8 +100,8 @@ def main():
     camera.set_controls({"ExposureTime":500})
     camera.start()
     
-    print("[INFO] starting model setup")
-    model = inference.get_model("classification-ofjuw/3")
+    #print("[INFO] starting model setup")
+    #model = inference.get_model("classification-ofjuw/3")
 
 
     print("[INFO] learning mask")
