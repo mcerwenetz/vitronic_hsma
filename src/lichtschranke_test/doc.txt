@@ -1,0 +1,22 @@
+# Aufbau Lichtschranke
+
+## Laser
+
+- leutchet dauerhaft
+- I == GND
+- S = 5V
+
+## Photodiode
+
+- VCC = 5V
+- GND = GND
+- D0 = D2
+
+## Prog:
+
+main liest aktuellen Wert an Photodiode aus und misst Zeitraum wie lange Licht einfällt. Gibt Zeitraum aus und speichert maximale Zeit.
+
+Diodenwerte:
+
+- 0: Licht an Diode 
+- 1: Kein Licht an Diode

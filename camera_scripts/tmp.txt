@@ -1,0 +1,7 @@
+base64 YOUR_IMAGE.jpg | curl -d @- \
+  "https://classify.roboflow.com/classification-ofjuw/1?api_key=5BBeWc9fVb0WznH4RnJn"
+pip install inference
+export ROBOFLOW_API_KEY="5BBeWc9fVb0WznH4RnJn"
+import inference
+model = inference.get_model("classification-ofjuw/1")
+model.infer(image="YOUR_IMAGE.jpg")
