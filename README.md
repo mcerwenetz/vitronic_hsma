@@ -1,12 +1,19 @@
-# READme für Makeathon @ Vitronic
+# Readme
 
-## Wer das liest ist doof
+## Struktur
 
-lol stimmt
+### `assets/`
+- Hier liegt die Skizze vom Aufbau
 
-## ESP32
+### `cameraScripts/`
+- Hier liegen die wichtigsten Scripte für die erfassung
 
-## PiCAM
+Wichtigstes script: `shutter2.py` auf dem Branch *test*.
+Hier wird die main gestartet.
+
+### `src/`
+Hier liegen die ganzen Datenbankscripte.
+
 
 ## Database
 
